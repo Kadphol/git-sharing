@@ -50,7 +50,7 @@
 - Main ideas:
   - naming conventions
   - PR/MRs
-  - Keep branchs short-lived
+  - Keep branches short-lived
   - CI/CD
 - What's best for what and why with how.
 
@@ -67,10 +67,10 @@
 
 - Git allows you to view the history of changes to files in a repository using the `git log` command. This command shows a list of commits, along with their associated metadata such as the author, date, and commit message.
 - Undo your mistake in many step:
-  - local unstaged: `git restore <filename>` restore file changees to latest commit.
+  - local unstaged: `git restore <filename>` restore file changes to latest commit.
   - local staged: `git restore --staged <filename>` same with staged changed.
-  - local commited: `git reset` with modes: soft undo only commit but saved changes, hard undo commit and changes. If you want to change only message you could you `git commit --amend` instead. If you want squash commit `git rebase -i <commit>`
-  - remote commited: `git reset` need to `git push --force` or `--force-with-lease` to change history. git revert can undo you mistake but also create new history.
-  - `--force-with-lease` is safer with check latest git fetch status before force push if remote have another commited, it would failed to prevent remove another's work.
+  - local committed: `git reset` with modes: soft undo only commit but saved changes, hard undo commit and changes. If you want to change only message you could you `git commit --amend` instead. If you want squash commit `git rebase -i <commit>`
+  - remote committed: `git reset` need to `git push --force` or `--force-with-lease` to change history. git revert can undo you mistake but also create new history.
+  - `--force-with-lease` is safer with check latest git fetch status before force push if remote have another committed, it would failed to prevent remove another's work.
 
 ## 8. Remark
