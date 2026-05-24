@@ -1,1065 +1,1401 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Git Knowledge Sharing - Scrolling Visual Guide</title>
-  <style>
-    :root {
-      color-scheme: dark;
-      --ink: #f7f2e8;
-      --muted: #bfb4a3;
-      --paper: #131211;
-      --panel: #211f1c;
-      --panel-strong: #2a2621;
-      --line: rgba(255,255,255,.13);
-      --git: #f05033;
-      --blue: #56afd0;
-      --green: #8abf68;
-      --yellow: #e9c75e;
-      --red: #db655e;
-      --violet: #b89ade;
-      --shadow: 0 26px 78px rgba(0,0,0,.4);
-    }
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Git Knowledge Sharing - Scrolling Visual Guide</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --ink: #f7f2e8;
+        --muted: #bfb4a3;
+        --paper: #131211;
+        --panel: #211f1c;
+        --panel-strong: #2a2621;
+        --line: rgba(255, 255, 255, 0.13);
+        --git: #f05033;
+        --blue: #56afd0;
+        --green: #8abf68;
+        --yellow: #e9c75e;
+        --red: #db655e;
+        --violet: #b89ade;
+        --shadow: 0 26px 78px rgba(0, 0, 0, 0.4);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+        scroll-padding-top: 86px;
+      }
+
+      body {
+        margin: 0;
+        color: var(--ink);
+        background:
+          radial-gradient(
+            circle at 12% 4%,
+            rgba(240, 80, 51, 0.28),
+            transparent 30rem
+          ),
+          radial-gradient(
+            circle at 88% 10%,
+            rgba(86, 175, 208, 0.16),
+            transparent 28rem
+          ),
+          linear-gradient(180deg, #0d0c0b 0%, var(--paper) 44%, #0f0e0d 100%);
+        font-family: "Avenir Next", "Segoe UI", Helvetica, Arial, sans-serif;
+        line-height: 1.45;
+        letter-spacing: 0;
+        overflow-x: hidden;
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        background-image:
+          linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+          linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0.035) 1px,
+            transparent 1px
+          );
+        background-size: 42px 42px;
+        mask-image: linear-gradient(
+          180deg,
+          rgba(0, 0, 0, 0.88),
+          rgba(0, 0, 0, 0.2)
+        );
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
 
-    * {
-      box-sizing: border-box;
-    }
-
-    html {
-      scroll-behavior: smooth;
-      scroll-padding-top: 86px;
-    }
-
-    body {
-      margin: 0;
-      color: var(--ink);
-      background:
-        radial-gradient(circle at 12% 4%, rgba(240,80,51,.28), transparent 30rem),
-        radial-gradient(circle at 88% 10%, rgba(86,175,208,.16), transparent 28rem),
-        linear-gradient(180deg, #0d0c0b 0%, var(--paper) 44%, #0f0e0d 100%);
-      font-family: "Avenir Next", "Segoe UI", Helvetica, Arial, sans-serif;
-      line-height: 1.45;
-      letter-spacing: 0;
-      overflow-x: hidden;
-    }
-
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      z-index: -1;
-      pointer-events: none;
-      background-image:
-        linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
-      background-size: 42px 42px;
-      mask-image: linear-gradient(180deg, rgba(0,0,0,.88), rgba(0,0,0,.2));
-    }
-
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
-
-    .site-nav {
-      position: sticky;
-      top: 0;
-      z-index: 40;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 18px;
-      width: min(1360px, calc(100vw - 32px));
-      margin: 0 auto;
-      padding: 12px 0;
-    }
-
-    .nav-shell {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      padding: 11px 13px;
-      border: 1px solid rgba(255,255,255,.1);
-      border-radius: 8px;
-      background: rgba(17,16,15,.84);
-      backdrop-filter: blur(16px);
-      box-shadow: 0 12px 34px rgba(0,0,0,.28);
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      min-width: 190px;
-      color: var(--muted);
-      font-size: 13px;
-      font-weight: 900;
-      text-transform: uppercase;
-      white-space: nowrap;
-    }
-
-    .mark {
-      width: 24px;
-      height: 24px;
-      flex: 0 0 auto;
-      border-radius: 6px;
-      background: var(--git);
-      position: relative;
-      transform: rotate(45deg);
-    }
-
-    .mark::before,
-    .mark::after {
-      content: "";
-      position: absolute;
-      background: var(--ink);
-    }
-
-    .mark::before {
-      width: 14px;
-      height: 2px;
-      left: 5px;
-      top: 11px;
-    }
-
-    .mark::after {
-      width: 5px;
-      height: 5px;
-      left: 14px;
-      top: 9px;
-      border-radius: 50%;
-      box-shadow: -8px 0 0 var(--ink);
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 7px;
-      justify-content: flex-end;
-      flex-wrap: wrap;
-    }
-
-    .nav-links a {
-      display: inline-flex;
-      align-items: center;
-      min-height: 32px;
-      padding: 0 10px;
-      border: 1px solid transparent;
-      border-radius: 999px;
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 800;
-    }
-
-    .nav-links a:hover {
-      color: var(--ink);
-      border-color: rgba(240,80,51,.5);
-      background: rgba(240,80,51,.12);
-    }
-
-    .page {
-      width: min(1360px, calc(100vw - 32px));
-      margin: 0 auto;
-      padding: 4px 0 80px;
-    }
-
-    .section {
-      min-height: calc(100vh - 72px);
-      display: grid;
-      align-items: center;
-      padding: clamp(38px, 6vw, 86px) 0;
-      border-bottom: 1px solid rgba(255,255,255,.08);
-    }
-
-    .section.tight {
-      min-height: 76vh;
-    }
-
-    .eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 14px;
-      color: var(--git);
-      font-size: 12px;
-      font-weight: 900;
-      text-transform: uppercase;
-    }
-
-    .eyebrow::before {
-      content: "";
-      width: 26px;
-      height: 2px;
-      background: currentColor;
-    }
-
-    h1,
-    h2,
-    h3 {
-      margin: 0;
-      line-height: 1.02;
-      letter-spacing: 0;
-    }
-
-    h1,
-    h2 {
-      font-family: Georgia, "Times New Roman", serif;
-      font-weight: 900;
-    }
-
-    h1 {
-      max-width: 1000px;
-      font-size: clamp(54px, 9vw, 126px);
-    }
-
-    h2 {
-      max-width: 980px;
-      font-size: clamp(38px, 5.8vw, 76px);
-    }
-
-    h3 {
-      font-size: clamp(20px, 2.2vw, 30px);
-      font-weight: 900;
-    }
-
-    p {
-      margin: 0;
-    }
-
-    .lede {
-      max-width: 830px;
-      margin-top: 20px;
-      color: var(--muted);
-      font-size: clamp(18px, 2vw, 25px);
-    }
-
-    .grid {
-      display: grid;
-      gap: 18px;
-    }
-
-    .two {
-      grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr);
-    }
-
-    .two.reverse {
-      grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr);
-    }
-
-    .three {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-
-    .four {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
-
-    .center {
-      text-align: center;
-      justify-items: center;
-    }
-
-    .mt {
-      margin-top: clamp(24px, 4vw, 48px);
-    }
-
-    .card {
-      min-width: 0;
-      padding: 18px;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: rgba(255,255,255,.055);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.05);
-    }
-
-    .card p {
-      margin-top: 10px;
-      color: var(--muted);
-    }
-
-    .tag {
-      display: inline-flex;
-      align-items: center;
-      min-height: 25px;
-      padding: 0 10px;
-      border: 1px solid rgba(255,255,255,.14);
-      border-radius: 999px;
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 900;
-      text-transform: uppercase;
-    }
-
-    .pill-row {
-      display: flex;
-      gap: 9px;
-      flex-wrap: wrap;
-      margin-top: 22px;
-    }
-
-    .pill {
-      min-height: 32px;
-      display: inline-flex;
-      align-items: center;
-      padding: 0 12px;
-      border-radius: 999px;
-      background: rgba(240,80,51,.13);
-      color: var(--ink);
-      font-size: 13px;
-      font-weight: 900;
-    }
-
-    .visual-frame {
-      position: relative;
-      display: grid;
-      place-items: center;
-      min-height: 430px;
-      padding: clamp(18px, 3vw, 34px);
-      overflow: hidden;
-      border: 1px solid rgba(255,255,255,.16);
-      border-radius: 8px;
-      background:
-        linear-gradient(135deg, rgba(240,80,51,.12), transparent 44%),
-        linear-gradient(180deg, rgba(255,255,255,.085), rgba(255,255,255,.035));
-      box-shadow: var(--shadow), inset 0 1px 0 rgba(255,255,255,.08);
-    }
-
-    .visual-frame.light {
-      background:
-        linear-gradient(135deg, rgba(240,80,51,.12), rgba(86,175,208,.08)),
-        #f4efe6;
-    }
-
-    .visual-frame::before {
-      content: "";
-      position: absolute;
-      inset: 14px;
-      border: 1px dashed rgba(255,255,255,.15);
-      border-radius: 7px;
-      pointer-events: none;
-    }
-
-    .visual-frame.light::before {
-      border-color: rgba(20,20,20,.14);
-    }
-
-    .visual-frame img {
-      position: relative;
-      z-index: 1;
-      max-width: 100%;
-      max-height: 640px;
-      object-fit: contain;
-      filter: drop-shadow(0 24px 34px rgba(0,0,0,.3));
-    }
-
-    .visual-frame.light img {
-      filter: drop-shadow(0 20px 28px rgba(0,0,0,.17));
-    }
-
-    .caption {
-      position: absolute;
-      left: 18px;
-      bottom: 16px;
-      z-index: 2;
-      padding: 6px 9px;
-      border-radius: 6px;
-      background: rgba(0,0,0,.6);
-      color: var(--ink);
-      font-size: 12px;
-      font-weight: 800;
-    }
-
-    .intro-map {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 14px;
-      width: 100%;
-      align-items: end;
-    }
-
-    .repo-node,
-    .remote-node {
-      padding: 16px;
-      border: 1px solid rgba(255,255,255,.14);
-      border-radius: 8px;
-      background: rgba(0,0,0,.35);
-      min-height: 138px;
-    }
-
-    .remote-node {
-      grid-column: 1 / -1;
-      justify-self: center;
-      width: min(560px, 100%);
-      min-height: 94px;
-      text-align: center;
-      border-color: rgba(240,80,51,.58);
-      background: rgba(240,80,51,.13);
-    }
-
-    .repo-title {
-      display: block;
-      color: var(--ink);
-      font-size: 18px;
-      font-weight: 900;
-    }
-
-    .repo-sub {
-      display: block;
-      margin-top: 8px;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .repo-img {
-      width: 112px;
-      height: 98px;
-      object-fit: contain;
-      margin-top: 8px;
-      opacity: .92;
-    }
-
-    .workflow {
-      display: grid;
-      grid-template-columns: repeat(9, minmax(96px, 1fr));
-      gap: 10px;
-      overflow-x: auto;
-      padding-bottom: 8px;
-    }
-
-    .step {
-      min-height: 106px;
-      padding: 14px 12px;
-      border: 1px solid rgba(255,255,255,.13);
-      border-radius: 8px;
-      background: rgba(255,255,255,.06);
-      position: relative;
-    }
-
-    .step::after {
-      content: "";
-      position: absolute;
-      top: 51px;
-      right: -12px;
-      width: 13px;
-      height: 2px;
-      background: var(--git);
-    }
-
-    .step:last-child::after {
-      display: none;
-    }
-
-    .step b {
-      display: block;
-      color: var(--ink);
-      font-size: 15px;
-    }
-
-    .step span {
-      display: block;
-      margin-top: 8px;
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    code,
-    pre {
-      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
-    }
-
-    .terminal {
-      padding: 16px;
-      border: 1px solid rgba(255,255,255,.11);
-      border-radius: 8px;
-      background: #0f0f0e;
-      color: #f2e8d7;
-      overflow-x: auto;
-    }
-
-    .terminal span {
-      display: block;
-      white-space: nowrap;
-    }
-
-    .terminal span::before {
-      content: "$ ";
-      color: var(--green);
-      font-weight: 900;
-    }
-
-    .strategy-copy {
-      max-width: 580px;
-    }
-
-    .strategy-meta {
-      display: grid;
-      gap: 12px;
-      margin-top: 24px;
-    }
-
-    .strategy-meta .card {
-      padding: 16px;
-    }
-
-    .mini-list {
-      margin: 10px 0 0;
-      padding: 0;
-      list-style: none;
-      color: var(--muted);
-    }
-
-    .mini-list li {
-      margin: 8px 0;
-      padding-left: 18px;
-      position: relative;
-    }
-
-    .mini-list li::before {
-      content: "";
-      position: absolute;
-      left: 0;
-      top: .72em;
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: var(--git);
-    }
-
-    .hook-track {
-      display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-      gap: 10px;
-      align-items: stretch;
-    }
-
-    .hook {
-      min-height: 168px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .hook::before {
-      content: attr(data-step);
-      display: block;
-      margin-bottom: 18px;
-      color: var(--git);
-      font-size: 32px;
-      font-weight: 900;
-    }
-
-    .hook:nth-child(2)::before { color: var(--blue); }
-    .hook:nth-child(3)::before { color: var(--yellow); }
-    .hook:nth-child(4)::before { color: var(--green); }
-    .hook:nth-child(5)::before { color: var(--violet); }
-
-    .conflict-grid,
-    .undo-grid,
-    .help-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1.1fr) minmax(320px, .9fr);
-      gap: 18px;
-      align-items: start;
-    }
-
-    .conflict-file {
-      padding: 20px;
-      border: 1px solid rgba(255,255,255,.13);
-      border-radius: 8px;
-      background: #10100f;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.05);
-      overflow-x: auto;
-    }
-
-    .conflict-file pre {
-      margin: 0;
-      color: #f2e8d7;
-      font-size: 15px;
-      line-height: 1.65;
-      white-space: pre-wrap;
-    }
-
-    .marker {
-      color: var(--red);
-      font-weight: 900;
-    }
-
-    .ours {
-      color: var(--yellow);
-    }
-
-    .theirs {
-      color: var(--blue);
-    }
-
-    .decision {
-      grid-column: 1 / -1;
-      text-align: center;
-      border-color: rgba(233,199,94,.65);
-      background: rgba(233,199,94,.12);
-    }
-
-    .safe {
-      border-color: rgba(138,191,104,.62);
-      background: rgba(138,191,104,.12);
-    }
-
-    .danger {
-      border-color: rgba(219,101,94,.62);
-      background: rgba(219,101,94,.12);
-    }
-
-    .manual-stack {
-      display: grid;
-      gap: 12px;
-    }
-
-    .manual-card {
-      display: grid;
-      grid-template-columns: 150px minmax(0, 1fr);
-      gap: 12px;
-      align-items: center;
-    }
-
-    .footer {
-      padding: 48px 0 20px;
-      color: var(--muted);
-      text-align: center;
-      font-size: 14px;
-    }
-
-    @media (max-width: 1050px) {
-      .nav-shell,
       .site-nav {
-        align-items: flex-start;
+        position: sticky;
+        top: 0;
+        z-index: 40;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        width: min(1360px, calc(100vw - 32px));
+        margin: 0 auto;
+        padding: 12px 0;
       }
 
       .nav-shell {
-        flex-direction: column;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 11px 13px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        background: rgba(17, 16, 15, 0.84);
+        backdrop-filter: blur(16px);
+        box-shadow: 0 12px 34px rgba(0, 0, 0, 0.28);
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 190px;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 900;
+        text-transform: uppercase;
+        white-space: nowrap;
+      }
+
+      .mark {
+        width: 24px;
+        height: 24px;
+        flex: 0 0 auto;
+        border-radius: 6px;
+        background: var(--git);
+        position: relative;
+        transform: rotate(45deg);
+      }
+
+      .mark::before,
+      .mark::after {
+        content: "";
+        position: absolute;
+        background: var(--ink);
+      }
+
+      .mark::before {
+        width: 14px;
+        height: 2px;
+        left: 5px;
+        top: 11px;
+      }
+
+      .mark::after {
+        width: 5px;
+        height: 5px;
+        left: 14px;
+        top: 9px;
+        border-radius: 50%;
+        box-shadow: -8px 0 0 var(--ink);
       }
 
       .nav-links {
-        justify-content: flex-start;
+        display: flex;
+        gap: 7px;
+        justify-content: flex-end;
+        flex-wrap: wrap;
       }
 
-      .two,
-      .two.reverse,
-      .three,
-      .four,
-      .hook-track,
-      .conflict-grid,
-      .undo-grid,
-      .help-grid {
-        grid-template-columns: 1fr;
+      .nav-links a {
+        display: inline-flex;
+        align-items: center;
+        min-height: 32px;
+        padding: 0 10px;
+        border: 1px solid transparent;
+        border-radius: 999px;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 800;
       }
 
-      .intro-map {
-        grid-template-columns: 1fr;
-      }
-
-      .remote-node {
-        grid-column: auto;
-      }
-
-      .workflow {
-        grid-template-columns: repeat(9, minmax(126px, 1fr));
-      }
-
-      .visual-frame {
-        min-height: 310px;
-      }
-
-      .manual-card {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    @media print {
-      body {
-        background: #fff;
-        color: #111;
-      }
-
-      body::before,
-      .site-nav {
-        display: none;
+      .nav-links a:hover {
+        color: var(--ink);
+        border-color: rgba(240, 80, 51, 0.5);
+        background: rgba(240, 80, 51, 0.12);
       }
 
       .page {
-        width: 100%;
-        padding: 0;
+        width: min(1360px, calc(100vw - 32px));
+        margin: 0 auto;
+        padding: 4px 0 80px;
       }
 
       .section {
-        min-height: auto;
-        page-break-after: always;
-        padding: 32px 0;
+        min-height: calc(100vh - 72px);
+        display: grid;
+        align-items: center;
+        padding: clamp(34px, 4.8vw, 66px) 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
       }
 
-      .card,
-      .visual-frame,
-      .terminal,
+      .section.tight {
+        min-height: 76vh;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 10px;
+        color: var(--git);
+        font-size: 12px;
+        font-weight: 900;
+        text-transform: uppercase;
+      }
+
+      .eyebrow::before {
+        content: "";
+        width: 26px;
+        height: 2px;
+        background: currentColor;
+      }
+
+      h1,
+      h2,
+      h3 {
+        margin: 0;
+        line-height: 1.08;
+        letter-spacing: 0;
+      }
+
+      h1,
+      h2 {
+        font-family: Georgia, "Times New Roman", serif;
+        font-weight: 900;
+      }
+
+      h1 {
+        max-width: 900px;
+        font-size: clamp(42px, 5.8vw, 78px);
+      }
+
+      h2 {
+        max-width: 820px;
+        font-size: clamp(30px, 3.5vw, 48px);
+      }
+
+      h3 {
+        font-size: clamp(18px, 1.5vw, 23px);
+        font-weight: 900;
+        line-height: 1.16;
+      }
+
+      p {
+        margin: 0;
+      }
+
+      .lede {
+        max-width: 830px;
+        margin-top: 14px;
+        color: var(--muted);
+        font-size: clamp(17px, 1.45vw, 20px);
+        line-height: 1.6;
+      }
+
+      .grid {
+        display: grid;
+        gap: 18px;
+      }
+
+      .two {
+        grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+      }
+
+      .two.reverse {
+        grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+      }
+
+      .three {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .four {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .center {
+        text-align: center;
+        justify-items: center;
+      }
+
+      .mt {
+        margin-top: clamp(20px, 3vw, 36px);
+      }
+
+      .card {
+        min-width: 0;
+        padding: 22px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 8px;
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.085), rgba(255, 255, 255, 0.055)),
+          rgba(255, 255, 255, 0.055);
+        box-shadow:
+          inset 0 1px 0 rgba(255, 255, 255, 0.08),
+          0 18px 42px rgba(0, 0, 0, 0.18);
+      }
+
+      .card p {
+        margin-top: 12px;
+        color: #d7cdbd;
+        font-size: 16px;
+        line-height: 1.62;
+      }
+
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        min-height: 27px;
+        padding: 0 11px;
+        border: 1px solid rgba(240, 80, 51, 0.42);
+        border-radius: 999px;
+        background: rgba(240, 80, 51, 0.1);
+        color: #f4d5ca;
+        font-size: 12px;
+        font-weight: 900;
+        text-transform: uppercase;
+      }
+
+      .pill-row {
+        display: flex;
+        gap: 9px;
+        flex-wrap: wrap;
+        margin-top: 22px;
+      }
+
+      .pill {
+        min-height: 32px;
+        display: inline-flex;
+        align-items: center;
+        padding: 0 12px;
+        border-radius: 999px;
+        background: rgba(240, 80, 51, 0.13);
+        color: var(--ink);
+        font-size: 13px;
+        font-weight: 900;
+      }
+
+      .visual-frame {
+        position: relative;
+        display: grid;
+        place-items: center;
+        min-height: 430px;
+        padding: clamp(18px, 3vw, 34px);
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-radius: 8px;
+        background:
+          linear-gradient(135deg, rgba(240, 80, 51, 0.12), transparent 44%),
+          linear-gradient(
+            180deg,
+            rgba(255, 255, 255, 0.085),
+            rgba(255, 255, 255, 0.035)
+          );
+        box-shadow:
+          var(--shadow),
+          inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      }
+
+      .visual-frame.light {
+        background:
+          linear-gradient(
+            135deg,
+            rgba(240, 80, 51, 0.12),
+            rgba(86, 175, 208, 0.08)
+          ),
+          #f4efe6;
+      }
+
+      .visual-frame::before {
+        content: "";
+        position: absolute;
+        inset: 14px;
+        border: 1px dashed rgba(255, 255, 255, 0.15);
+        border-radius: 7px;
+        pointer-events: none;
+      }
+
+      .visual-frame.light::before {
+        border-color: rgba(20, 20, 20, 0.14);
+      }
+
+      .visual-frame img {
+        position: relative;
+        z-index: 1;
+        max-width: 100%;
+        max-height: 640px;
+        object-fit: contain;
+        filter: drop-shadow(0 24px 34px rgba(0, 0, 0, 0.3));
+      }
+
+      .visual-frame.light img {
+        filter: drop-shadow(0 20px 28px rgba(0, 0, 0, 0.17));
+      }
+
+      .caption {
+        position: absolute;
+        left: 18px;
+        bottom: 16px;
+        z-index: 2;
+        padding: 6px 9px;
+        border-radius: 6px;
+        background: rgba(0, 0, 0, 0.6);
+        color: var(--ink);
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      .intro-map {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+        width: 100%;
+        align-items: end;
+      }
+
       .repo-node,
-      .remote-node,
-      .conflict-file {
-        background: #fff;
-        color: #111;
-        border-color: #ddd;
-        box-shadow: none;
+      .remote-node {
+        padding: 19px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 8px;
+        background: rgba(0, 0, 0, 0.42);
+        min-height: 146px;
       }
 
-      .lede,
-      .card p,
-      .mini-list,
-      .repo-sub,
+      .remote-node {
+        grid-column: 1 / -1;
+        justify-self: center;
+        width: min(560px, 100%);
+        min-height: 94px;
+        text-align: center;
+        border-color: rgba(240, 80, 51, 0.58);
+        background: rgba(240, 80, 51, 0.13);
+      }
+
+      .repo-title {
+        display: block;
+        color: var(--ink);
+        font-size: 19px;
+        font-weight: 900;
+      }
+
+      .repo-sub {
+        display: block;
+        margin-top: 10px;
+        color: #d7cdbd;
+        font-size: 15px;
+        line-height: 1.5;
+      }
+
+      .repo-img {
+        width: 112px;
+        height: 98px;
+        object-fit: contain;
+        margin-top: 8px;
+        opacity: 0.92;
+      }
+
+      .workflow {
+        display: grid;
+        grid-template-columns: repeat(9, minmax(96px, 1fr));
+        gap: 10px;
+        overflow-x: auto;
+        padding-bottom: 8px;
+      }
+
+      .step {
+        min-height: 122px;
+        padding: 17px 14px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.075);
+        position: relative;
+      }
+
+      .step::after {
+        content: "";
+        position: absolute;
+        top: 58px;
+        right: -12px;
+        width: 13px;
+        height: 2px;
+        background: var(--git);
+      }
+
+      .step:last-child::after {
+        display: none;
+      }
+
+      .step b {
+        display: block;
+        color: var(--ink);
+        font-size: 17px;
+      }
+
       .step span {
-        color: #555;
+        display: block;
+        margin-top: 10px;
+        color: #d7cdbd;
+        font-size: 14px;
+        line-height: 1.45;
       }
-    }
-  </style>
-</head>
-<body>
-  <nav class="site-nav" aria-label="Page navigation">
-    <div class="nav-shell">
-      <a class="brand" href="#top"><span class="mark" aria-hidden="true"></span><span>Git Visual Guide</span></a>
-      <div class="nav-links">
-        <a href="#states">States</a>
-        <a href="#workflow">Workflow</a>
-        <a href="#trunk">Trunk</a>
-        <a href="#git-flow">Git Flow</a>
-        <a href="#github-flow">GitHub</a>
-        <a href="#gitlab-flow">GitLab</a>
-        <a href="#release">Release</a>
-        <a href="#hooks">Hooks</a>
-        <a href="#conflicts">Conflicts</a>
-        <a href="#undo-help">Undo + Help</a>
-      </div>
-    </div>
-  </nav>
 
-  <main class="page" id="top">
-    <section class="section">
-      <div class="grid two">
-        <div>
-          <p class="eyebrow">Internal Engineering Guide</p>
-          <h1>Git for software developers</h1>
-          <p class="lede">A one-page scrolling visual guide to Git collaboration: repositories, states, workflow, branching models, hooks, conflicts, undo choices, and command-line help.</p>
-          <div class="pill-row">
-            <span class="pill">distributed repo</span>
-            <span class="pill">staging model</span>
-            <span class="pill">PR workflow</span>
-            <span class="pill">branch strategy</span>
-          </div>
+      code,
+      pre {
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      }
+
+      .terminal {
+        padding: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 8px;
+        background: #0f0f0e;
+        color: #f2e8d7;
+        font-size: 15px;
+        line-height: 1.75;
+        overflow-x: auto;
+      }
+
+      .terminal span {
+        display: block;
+        white-space: nowrap;
+      }
+
+      .terminal span::before {
+        content: "$ ";
+        color: var(--green);
+        font-weight: 900;
+      }
+
+      .strategy-copy {
+        max-width: 640px;
+      }
+
+      .strategy-meta {
+        display: grid;
+        gap: 14px;
+        margin-top: 22px;
+      }
+
+      .strategy-meta .card {
+        padding: 20px;
+      }
+
+      .mini-list {
+        margin: 12px 0 0;
+        padding: 0;
+        list-style: none;
+        color: #d7cdbd;
+        font-size: 16px;
+        line-height: 1.55;
+      }
+
+      .mini-list li {
+        margin: 10px 0;
+        padding-left: 22px;
+        position: relative;
+      }
+
+      .mini-list li::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0.68em;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--git);
+      }
+
+      .hook-track {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 10px;
+        align-items: stretch;
+      }
+
+      .hook {
+        min-height: 190px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .hook::before {
+        content: attr(data-step);
+        display: block;
+        margin-bottom: 22px;
+        color: var(--git);
+        font-size: 30px;
+        font-weight: 900;
+      }
+
+      .hook:nth-child(2)::before {
+        color: var(--blue);
+      }
+      .hook:nth-child(3)::before {
+        color: var(--yellow);
+      }
+      .hook:nth-child(4)::before {
+        color: var(--green);
+      }
+      .hook:nth-child(5)::before {
+        color: var(--violet);
+      }
+
+      .conflict-grid,
+      .undo-grid,
+      .help-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+        gap: 18px;
+        align-items: start;
+      }
+
+      .conflict-file {
+        padding: 24px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 8px;
+        background: #10100f;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        overflow-x: auto;
+      }
+
+      .conflict-file pre {
+        margin: 0;
+        color: #f2e8d7;
+        font-size: 16px;
+        line-height: 1.75;
+        white-space: pre-wrap;
+      }
+
+      .marker {
+        color: var(--red);
+        font-weight: 900;
+      }
+
+      .ours {
+        color: var(--yellow);
+      }
+
+      .theirs {
+        color: var(--blue);
+      }
+
+      .decision {
+        grid-column: 1 / -1;
+        text-align: center;
+        border-color: rgba(233, 199, 94, 0.65);
+        background: rgba(233, 199, 94, 0.12);
+      }
+
+      .safe {
+        border-color: rgba(138, 191, 104, 0.62);
+        background: rgba(138, 191, 104, 0.12);
+      }
+
+      .danger {
+        border-color: rgba(219, 101, 94, 0.62);
+        background: rgba(219, 101, 94, 0.12);
+      }
+
+      .manual-stack {
+        display: grid;
+        gap: 12px;
+      }
+
+      .manual-card {
+        display: grid;
+        grid-template-columns: 150px minmax(0, 1fr);
+        gap: 12px;
+        align-items: center;
+      }
+
+      .footer {
+        padding: 48px 0 20px;
+        color: var(--muted);
+        text-align: center;
+        font-size: 14px;
+      }
+
+      @media (max-width: 1050px) {
+        .nav-shell,
+        .site-nav {
+          align-items: flex-start;
+        }
+
+        .nav-shell {
+          flex-direction: column;
+        }
+
+        .nav-links {
+          justify-content: flex-start;
+        }
+
+        .two,
+        .two.reverse,
+        .three,
+        .four,
+        .hook-track,
+        .conflict-grid,
+        .undo-grid,
+        .help-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .intro-map {
+          grid-template-columns: 1fr;
+        }
+
+        .remote-node {
+          grid-column: auto;
+        }
+
+        .workflow {
+          grid-template-columns: repeat(9, minmax(126px, 1fr));
+        }
+
+        .visual-frame {
+          min-height: 310px;
+        }
+
+        .manual-card {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media print {
+        body {
+          background: #fff;
+          color: #111;
+        }
+
+        body::before,
+        .site-nav {
+          display: none;
+        }
+
+        .page {
+          width: 100%;
+          padding: 0;
+        }
+
+        .section {
+          min-height: auto;
+          page-break-after: always;
+          padding: 32px 0;
+        }
+
+        .card,
+        .visual-frame,
+        .terminal,
+        .repo-node,
+        .remote-node,
+        .conflict-file {
+          background: #fff;
+          color: #111;
+          border-color: #ddd;
+          box-shadow: none;
+        }
+
+        .lede,
+        .card p,
+        .mini-list,
+        .repo-sub,
+        .step span {
+          color: #555;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="site-nav" aria-label="Page navigation">
+      <div class="nav-shell">
+        <a class="brand" href="#top"
+          ><span class="mark" aria-hidden="true"></span
+          ><span>Git Visual Guide</span></a
+        >
+        <div class="nav-links">
+          <a href="#internal">Internal</a>
+          <a href="#states">States</a>
+          <a href="#workflow">Workflow</a>
+          <a href="#branching-intro">Branching</a>
+          <a href="#trunk">Trunk</a>
+          <a href="#git-flow">Git Flow</a>
+          <a href="#github-flow">GitHub</a>
+          <a href="#gitlab-flow">GitLab</a>
+          <a href="#release">Release</a>
+          <a href="#hooks">Hooks</a>
+          <a href="#conflicts">Conflicts</a>
+          <a href="#undo">Undo</a>
+          <a href="#guide">Guide</a>
         </div>
-        <div class="visual-frame">
-          <div class="intro-map">
-            <div class="repo-node">
-              <span class="repo-title">Local repository</span>
-              <span class="repo-sub">Full history, branches, tags, and refs on your machine.</span>
-              <img class="repo-img" src="assets/git-internal.png" alt="Git internal repository diagram">
+      </div>
+    </nav>
+
+    <main class="page" id="top">
+      <section class="section">
+        <div class="grid two">
+          <div>
+            <p class="eyebrow">Internal Engineering Guide</p>
+            <h1>Git for software developers</h1>
+            <p class="lede">
+              A one-page scrolling visual guide to Git collaboration:
+              repositories, states, workflow, branching models, hooks,
+              conflicts, undo choices, and command-line help.
+            </p>
+            <div class="pill-row">
+              <span class="pill">distributed repo</span>
+              <span class="pill">staging model</span>
+              <span class="pill">PR workflow</span>
+              <span class="pill">branch strategy</span>
             </div>
-            <div class="repo-node">
-              <span class="repo-title">Developer workflow</span>
-              <span class="repo-sub">Branch, change, stage, commit, and push.</span>
+          </div>
+          <div class="visual-frame">
+            <div class="intro-map">
+              <div class="repo-node">
+                <span class="repo-title">Local repository</span>
+                <span class="repo-sub"
+                  >Full history, branches, tags, and refs on your machine.</span
+                >
+              </div>
+              <div class="repo-node">
+                <span class="repo-title">Developer workflow</span>
+                <span class="repo-sub"
+                  >Branch, change, stage, commit, and push.</span
+                >
+              </div>
+              <div class="repo-node">
+                <span class="repo-title">Review loop</span>
+                <span class="repo-sub"
+                  >Pull request, CI, feedback, and merge.</span
+                >
+              </div>
+              <div class="remote-node">
+                <span class="repo-title">Remote repository</span>
+                <span class="repo-sub"
+                  >GitHub, GitLab, Bitbucket, or internal Git server.</span
+                >
+              </div>
             </div>
-            <div class="repo-node">
-              <span class="repo-title">Review loop</span>
-              <span class="repo-sub">Pull request, CI, feedback, and merge.</span>
+            <span class="caption"
+              >Each provided image is used once in this page</span
+            >
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="internal">
+        <div class="grid two reverse">
+          <figure class="visual-frame light">
+            <img
+              src="assets/git-internal.png"
+              alt="Git internal repository diagram"
+            />
+            <figcaption class="caption">Git Internal Model</figcaption>
+          </figure>
+          <div>
+            <p class="eyebrow">Git Internal</p>
+            <h2>Commits point to snapshots.</h2>
+            <p class="lede">
+              Git stores history as objects. A commit points to a tree, and
+              trees point to blobs that represent file content. Branches and
+              tags are lightweight references to commits.
+            </p>
+            <div class="grid two mt">
+              <div class="card">
+                <span class="tag">Commit</span>
+                <p>
+                  A checkpoint with metadata, message, parent link, and tree
+                  pointer.
+                </p>
+              </div>
+              <div class="card">
+                <span class="tag">Tree + Blob</span>
+                <p>Trees describe directories. Blobs hold file contents.</p>
+              </div>
             </div>
-            <div class="remote-node">
-              <span class="repo-title">Remote repository</span>
-              <span class="repo-sub">GitHub, GitLab, Bitbucket, or internal Git server.</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="states">
+        <div class="grid two reverse">
+          <figure class="visual-frame light">
+            <img
+              src="assets/three-states-git.webp"
+              alt="Git three states diagram showing working directory, staging area, and local repository"
+            />
+            <figcaption class="caption">
+              Working Directory -> Staging Area -> Local Repository
+            </figcaption>
+          </figure>
+          <div>
+            <p class="eyebrow">Three States</p>
+            <h2>Edit, select, then record.</h2>
+            <p class="lede">
+              Git separates files on disk, selected changes for the next commit,
+              and committed history. This is why clean commits are possible even
+              when your working directory contains mixed changes.
+            </p>
+            <div class="grid two mt">
+              <div class="card">
+                <span class="tag">Inspect</span>
+                <p>
+                  <code>git status</code> shows where each change currently
+                  lives.
+                </p>
+              </div>
+              <div class="card">
+                <span class="tag">Commit cleanly</span>
+                <p>
+                  Use staging to group related changes into one coherent
+                  checkpoint.
+                </p>
+              </div>
             </div>
           </div>
-          <span class="caption">Each provided image is used once in this page</span>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <section class="section" id="states">
-      <div class="grid two reverse">
-        <figure class="visual-frame light">
-          <img src="assets/three-states-git.webp" alt="Git three states diagram showing working directory, staging area, and local repository">
-          <figcaption class="caption">Working Directory -> Staging Area -> Local Repository</figcaption>
-        </figure>
-        <div>
-          <p class="eyebrow">Three States</p>
-          <h2>Edit, select, then record.</h2>
-          <p class="lede">Git separates files on disk, selected changes for the next commit, and committed history. This is why clean commits are possible even when your working directory contains mixed changes.</p>
-          <div class="grid two mt">
-            <div class="card"><span class="tag">Inspect</span><p><code>git status</code> shows where each change currently lives.</p></div>
-            <div class="card"><span class="tag">Commit cleanly</span><p>Use staging to group related changes into one coherent checkpoint.</p></div>
+      <section class="section tight" id="workflow">
+        <div class="center">
+          <p class="eyebrow">Basic Workflow</p>
+          <h2>The daily collaboration loop.</h2>
+          <p class="lede">
+            Most engineering teams rely on short-lived branches, small commits,
+            pull requests, review, CI, and protected merges.
+          </p>
+        </div>
+        <div class="workflow mt" aria-label="Basic Git workflow">
+          <div class="step"><b>clone</b><span>get the repo</span></div>
+          <div class="step"><b>branch</b><span>isolate work</span></div>
+          <div class="step"><b>change</b><span>edit files</span></div>
+          <div class="step"><b>add</b><span>stage intent</span></div>
+          <div class="step"><b>commit</b><span>save snapshot</span></div>
+          <div class="step"><b>push</b><span>publish branch</span></div>
+          <div class="step"><b>PR / MR</b><span>open review</span></div>
+          <div class="step"><b>review</b><span>CI + feedback</span></div>
+          <div class="step"><b>merge</b><span>land safely</span></div>
+        </div>
+        <div class="grid two mt">
+          <div class="terminal">
+            <span>git clone &lt;repo-url&gt;</span>
+            <span>git switch -c feature/login-page</span>
+            <span>git add src/Login.tsx</span>
+            <span>git commit -m "Add login page"</span>
+            <span>git push -u origin feature/login-page</span>
+          </div>
+          <div class="card">
+            <h3>Good PR shape</h3>
+            <ul class="mini-list">
+              <li>Small enough to review</li>
+              <li>Clear enough to understand</li>
+              <li>Safe enough to merge</li>
+            </ul>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <section class="section tight" id="workflow">
-      <div class="center">
-        <p class="eyebrow">Basic Workflow</p>
-        <h2>The daily collaboration loop.</h2>
-        <p class="lede">Most engineering teams rely on short-lived branches, small commits, pull requests, review, CI, and protected merges.</p>
-      </div>
-      <div class="workflow mt" aria-label="Basic Git workflow">
-        <div class="step"><b>clone</b><span>get the repo</span></div>
-        <div class="step"><b>branch</b><span>isolate work</span></div>
-        <div class="step"><b>change</b><span>edit files</span></div>
-        <div class="step"><b>add</b><span>stage intent</span></div>
-        <div class="step"><b>commit</b><span>save snapshot</span></div>
-        <div class="step"><b>push</b><span>publish branch</span></div>
-        <div class="step"><b>PR / MR</b><span>open review</span></div>
-        <div class="step"><b>review</b><span>CI + feedback</span></div>
-        <div class="step"><b>merge</b><span>land safely</span></div>
-      </div>
-      <div class="grid two mt">
-        <div class="terminal">
-          <span>git clone &lt;repo-url&gt;</span>
-          <span>git switch -c feature/login-page</span>
-          <span>git add src/Login.tsx</span>
-          <span>git commit -m "Add login page"</span>
-          <span>git push -u origin feature/login-page</span>
+      <section class="section tight" id="branching-intro">
+        <div class="center">
+          <p class="eyebrow">Branching Strategies</p>
+          <h2>Branching strategy is a release decision.</h2>
+          <p class="lede">
+            The right model depends on deployment frequency, release governance,
+            team discipline, and how stable main must remain. The next sections
+            separate each strategy so the tradeoffs are easier to compare.
+          </p>
         </div>
-        <div class="card">
-          <h3>Good PR shape</h3>
-          <ul class="mini-list">
-            <li>Small enough to review</li>
-            <li>Clear enough to understand</li>
-            <li>Safe enough to merge</li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <section class="section" id="trunk">
-      <div class="grid two reverse">
-        <figure class="visual-frame light">
-          <img src="assets/trunk-based-branching.png" alt="Trunk-based branching diagram">
-          <figcaption class="caption">Trunk-Based Development</figcaption>
-        </figure>
-        <div class="strategy-copy">
-          <p class="eyebrow">Branching Strategy</p>
-          <h2>Trunk-Based Development</h2>
-          <p class="lede">Integrate into main frequently. Branches live for hours or a few days, and feature flags hide unfinished work.</p>
-          <div class="strategy-meta">
-            <div class="card"><span class="tag">Pros</span><p>Fast integration, fewer stale branches, strong fit for CI/CD.</p></div>
-            <div class="card"><span class="tag">Cons</span><p>Requires discipline, strong tests, and often feature flags.</p></div>
-            <div class="card"><span class="tag">Use when</span><p>You deploy often and can keep main healthy.</p></div>
+        <div class="grid four mt">
+          <div class="card">
+            <span class="tag">Fast delivery</span>
+            <p>Prefer short-lived branches and strong CI.</p>
+          </div>
+          <div class="card">
+            <span class="tag">Review workflow</span>
+            <p>Use PRs or MRs to keep collaboration visible.</p>
+          </div>
+          <div class="card">
+            <span class="tag">Release control</span>
+            <p>Add release branches when QA or approval needs time.</p>
+          </div>
+          <div class="card">
+            <span class="tag">Main health</span>
+            <p>Protect main and make broken builds visible quickly.</p>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <section class="section" id="git-flow">
-      <div class="grid two">
-        <div class="strategy-copy">
-          <p class="eyebrow">Branching Strategy</p>
-          <h2>Git Flow</h2>
-          <p class="lede">A structured model with main, develop, feature, release, and hotfix branches. It favors release control over speed.</p>
-          <div class="strategy-meta">
-            <div class="card"><span class="tag">Pros</span><p>Clear release stages, explicit hotfix process, governance-friendly.</p></div>
-            <div class="card"><span class="tag">Cons</span><p>More ceremony, slower integration, and more long-lived branches.</p></div>
-            <div class="card"><span class="tag">Use when</span><p>You have scheduled, versioned, or regulated releases.</p></div>
+      <section class="section" id="trunk">
+        <div class="grid two reverse">
+          <figure class="visual-frame light">
+            <img
+              src="assets/trunk-based-branching.png"
+              alt="Trunk-based branching diagram"
+            />
+            <figcaption class="caption">Trunk-Based Development</figcaption>
+          </figure>
+          <div class="strategy-copy">
+            <p class="eyebrow">Branching Strategy</p>
+            <h2>Trunk-Based Development</h2>
+            <p class="lede">
+              Integrate into main frequently. Branches live for hours or a few
+              days, and feature flags hide unfinished work.
+            </p>
+            <div class="strategy-meta">
+              <div class="card">
+                <span class="tag">Pros</span>
+                <p>
+                  Fast integration, fewer stale branches, strong fit for CI/CD.
+                </p>
+              </div>
+              <div class="card">
+                <span class="tag">Cons</span>
+                <p>
+                  Requires discipline, strong tests, and often feature flags.
+                </p>
+              </div>
+              <div class="card">
+                <span class="tag">Use when</span>
+                <p>You deploy often and can keep main healthy.</p>
+              </div>
+            </div>
           </div>
         </div>
-        <figure class="visual-frame light">
-          <img src="assets/git-flow-branching.png" alt="Git Flow branching diagram">
-          <figcaption class="caption">Git Flow</figcaption>
-        </figure>
-      </div>
-    </section>
+      </section>
 
-    <section class="section" id="github-flow">
-      <div class="grid two reverse">
-        <figure class="visual-frame light">
-          <img src="assets/git-hub-flow.webp" alt="GitHub Flow branching diagram">
-          <figcaption class="caption">GitHub Flow</figcaption>
-        </figure>
-        <div class="strategy-copy">
-          <p class="eyebrow">Branching Strategy</p>
-          <h2>GitHub Flow</h2>
-          <p class="lede">Branch from main, open a pull request, review, pass CI, and merge back into a deployable main branch.</p>
-          <div class="strategy-meta">
-            <div class="card"><span class="tag">Pros</span><p>Simple, PR-centered, easy to teach, great for web teams.</p></div>
-            <div class="card"><span class="tag">Cons</span><p>Main must stay stable, and release gates need separate process if required.</p></div>
-            <div class="card"><span class="tag">Use when</span><p>You want the default lightweight flow for most product teams.</p></div>
+      <section class="section" id="git-flow">
+        <div class="grid two">
+          <div class="strategy-copy">
+            <p class="eyebrow">Branching Strategy</p>
+            <h2>Git Flow</h2>
+            <p class="lede">
+              A structured model with main, develop, feature, release, and
+              hotfix branches. It favors release control over speed.
+            </p>
+            <div class="strategy-meta">
+              <div class="card">
+                <span class="tag">Pros</span>
+                <p>
+                  Clear release stages, explicit hotfix process,
+                  governance-friendly.
+                </p>
+              </div>
+              <div class="card">
+                <span class="tag">Cons</span>
+                <p>
+                  More ceremony, slower integration, and more long-lived
+                  branches.
+                </p>
+              </div>
+              <div class="card">
+                <span class="tag">Use when</span>
+                <p>You have scheduled, versioned, or regulated releases.</p>
+              </div>
+            </div>
+          </div>
+          <figure class="visual-frame light">
+            <img
+              src="assets/git-flow-branching.png"
+              alt="Git Flow branching diagram"
+            />
+            <figcaption class="caption">Git Flow</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section class="section" id="github-flow">
+        <div class="grid two reverse">
+          <figure class="visual-frame light">
+            <img
+              src="assets/git-hub-flow.webp"
+              alt="GitHub Flow branching diagram"
+            />
+            <figcaption class="caption">GitHub Flow</figcaption>
+          </figure>
+          <div class="strategy-copy">
+            <p class="eyebrow">Branching Strategy</p>
+            <h2>GitHub Flow</h2>
+            <p class="lede">
+              Branch from main, open a pull request, review, pass CI, and merge
+              back into a deployable main branch.
+            </p>
+            <div class="strategy-meta">
+              <div class="card">
+                <span class="tag">Pros</span>
+                <p>Simple, PR-centered, easy to teach, great for web teams.</p>
+              </div>
+              <div class="card">
+                <span class="tag">Cons</span>
+                <p>
+                  Main must stay stable, and release gates need separate process
+                  if required.
+                </p>
+              </div>
+              <div class="card">
+                <span class="tag">Use when</span>
+                <p>
+                  You want the default lightweight flow for most product teams.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <section class="section" id="gitlab-flow">
-      <div class="grid two">
-        <div class="strategy-copy">
-          <p class="eyebrow">Branching Strategy</p>
-          <h2>GitLab Flow</h2>
-          <p class="lede">Extend the main-branch workflow with environment branches such as staging or production when deployment paths need to be visible.</p>
-          <div class="strategy-meta">
-            <div class="card"><span class="tag">Pros</span><p>Still simple, but maps code movement to environments.</p></div>
-            <div class="card"><span class="tag">Cons</span><p>Environment branches need clear ownership and merge rules.</p></div>
-            <div class="card"><span class="tag">Use when</span><p>You use PR/MR review plus staging or production branches.</p></div>
+      <section class="section" id="gitlab-flow">
+        <div class="grid two">
+          <div class="strategy-copy">
+            <p class="eyebrow">Branching Strategy</p>
+            <h2>GitLab Flow</h2>
+            <p class="lede">
+              Extend the main-branch workflow with environment branches such as
+              staging or production when deployment paths need to be visible.
+            </p>
+            <div class="strategy-meta">
+              <div class="card">
+                <span class="tag">Pros</span>
+                <p>Still simple, but maps code movement to environments.</p>
+              </div>
+              <div class="card">
+                <span class="tag">Cons</span>
+                <p>
+                  Environment branches need clear ownership and merge rules.
+                </p>
+              </div>
+              <div class="card">
+                <span class="tag">Use when</span>
+                <p>You use PR/MR review plus staging or production branches.</p>
+              </div>
+            </div>
+          </div>
+          <figure class="visual-frame light">
+            <img
+              src="assets/git-lab-flow.webp"
+              alt="GitLab Flow diagram with environment branches"
+            />
+            <figcaption class="caption">GitLab Flow</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section class="section" id="release">
+        <div class="grid two reverse">
+          <figure class="visual-frame light">
+            <img
+              src="assets/release-branching-flow.webp"
+              alt="Release branch workflow diagram"
+            />
+            <figcaption class="caption">Release Branches</figcaption>
+          </figure>
+          <div class="strategy-copy">
+            <p class="eyebrow">Branching Strategy</p>
+            <h2>Release Branches</h2>
+            <p class="lede">
+              Create a release branch to stabilize a deployment candidate while
+              new development continues on main.
+            </p>
+            <div class="strategy-meta">
+              <div class="card">
+                <span class="tag">Pros</span>
+                <p>
+                  Supports QA, UAT, patching, and controlled production
+                  releases.
+                </p>
+              </div>
+              <div class="card">
+                <span class="tag">Cons</span>
+                <p>
+                  Fixes may need cherry-picking, and stale release branches add
+                  overhead.
+                </p>
+              </div>
+              <div class="card">
+                <span class="tag">Use when</span>
+                <p>QA or release approval needs time before production.</p>
+              </div>
+            </div>
           </div>
         </div>
-        <figure class="visual-frame light">
-          <img src="assets/git-lab-flow.webp" alt="GitLab Flow diagram with environment branches">
-          <figcaption class="caption">GitLab Flow</figcaption>
-        </figure>
-      </div>
-    </section>
+      </section>
 
-    <section class="section" id="release">
-      <div class="grid two reverse">
-        <figure class="visual-frame light">
-          <img src="assets/release-branching-flow.webp" alt="Release branch workflow diagram">
-          <figcaption class="caption">Release Branches</figcaption>
-        </figure>
-        <div class="strategy-copy">
-          <p class="eyebrow">Branching Strategy</p>
-          <h2>Release Branches</h2>
-          <p class="lede">Create a release branch to stabilize a deployment candidate while new development continues on main.</p>
-          <div class="strategy-meta">
-            <div class="card"><span class="tag">Pros</span><p>Supports QA, UAT, patching, and controlled production releases.</p></div>
-            <div class="card"><span class="tag">Cons</span><p>Fixes may need cherry-picking, and stale release branches add overhead.</p></div>
-            <div class="card"><span class="tag">Use when</span><p>QA or release approval needs time before production.</p></div>
+      <section class="section tight" id="branching-conclusion">
+        <div class="center">
+          <p class="eyebrow">Branching Conclusion</p>
+          <h2>Default simple, add process only when needed.</h2>
+          <p class="lede">
+            For most product teams, GitHub Flow or GitLab Flow is the best
+            starting point. Move toward trunk-based when CI and feature flags
+            are strong. Use Git Flow or release branches when release governance
+            is the real constraint.
+          </p>
+        </div>
+        <div class="grid three mt">
+          <div class="card safe">
+            <span class="tag">Default</span>
+            <p>GitHub / GitLab Flow for simple review-driven collaboration.</p>
+          </div>
+          <div class="card">
+            <span class="tag">High velocity</span>
+            <p>Trunk-based development when main can stay releasable.</p>
+          </div>
+          <div class="card">
+            <span class="tag">Controlled release</span>
+            <p>
+              Git Flow or release branches for QA, UAT, or versioned delivery.
+            </p>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <section class="section tight" id="hooks">
-      <div class="center">
-        <p class="eyebrow">Git Hooks Workflow</p>
-        <h2>Move quality checks earlier.</h2>
-        <p class="lede">Local hooks should be fast and clear. Heavy validation belongs in CI.</p>
-      </div>
-      <div class="hook-track mt">
-        <div class="card hook" data-step="01"><h3>Write code</h3><p>Edit files in the working directory.</p></div>
-        <div class="card hook" data-step="02"><h3>pre-commit</h3><p>Format, lint, type check, or scan secrets.</p></div>
-        <div class="card hook" data-step="03"><h3>commit-msg</h3><p>Enforce message style before saving the commit.</p></div>
-        <div class="card hook" data-step="04"><h3>pre-push</h3><p>Run heavier local tests before publishing.</p></div>
-        <div class="card hook" data-step="05"><h3>CI</h3><p>Build, test, scan, and gate the merge remotely.</p></div>
-      </div>
-      <div class="grid two mt">
-        <div class="terminal">
-          <span>npm install husky --save-dev</span>
-          <span>npx husky init</span>
-          <span>echo "npm run lint" &gt; .husky/pre-commit</span>
+      <section class="section tight" id="hooks">
+        <div class="center">
+          <p class="eyebrow">Git Hooks Workflow</p>
+          <h2>Move quality checks earlier.</h2>
+          <p class="lede">
+            Local hooks should be fast and clear. Heavy validation belongs in
+            CI.
+          </p>
         </div>
-        <div class="card">
-          <h3>Hook quality bar</h3>
-          <ul class="mini-list">
-            <li>Fast enough for daily use</li>
-            <li>Reliable on every machine</li>
-            <li>Clear failure message</li>
-            <li>Useful enough to block</li>
-          </ul>
+        <div class="hook-track mt">
+          <div class="card hook" data-step="01">
+            <h3>Write code</h3>
+            <p>Edit files in the working directory.</p>
+          </div>
+          <div class="card hook" data-step="02">
+            <h3>pre-commit</h3>
+            <p>Format, lint, type check, or scan secrets.</p>
+          </div>
+          <div class="card hook" data-step="03">
+            <h3>commit-msg</h3>
+            <p>Enforce message style before saving the commit.</p>
+          </div>
+          <div class="card hook" data-step="04">
+            <h3>pre-push</h3>
+            <p>Run heavier local tests before publishing.</p>
+          </div>
+          <div class="card hook" data-step="05">
+            <h3>CI</h3>
+            <p>Build, test, scan, and gate the merge remotely.</p>
+          </div>
         </div>
-      </div>
-    </section>
+        <div class="grid two mt">
+          <div class="terminal">
+            <span>npm install husky --save-dev</span>
+            <span>npx husky init</span>
+            <span>echo "npm run lint" &gt; .husky/pre-commit</span>
+          </div>
+          <div class="card">
+            <h3>Hook quality bar</h3>
+            <ul class="mini-list">
+              <li>Fast enough for daily use</li>
+              <li>Reliable on every machine</li>
+              <li>Clear failure message</li>
+              <li>Useful enough to block</li>
+            </ul>
+          </div>
+        </div>
+      </section>
 
-    <section class="section tight" id="conflicts">
-      <div class="center">
-        <p class="eyebrow">Conflict Resolution</p>
-        <h2>Git stops when a human must choose.</h2>
-        <p class="lede">Resolve conflicts by deleting markers, keeping the correct final code, staging the file, and continuing the merge or rebase.</p>
-      </div>
-      <div class="conflict-grid mt">
-        <div class="conflict-file">
-          <pre><span class="marker">&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</span>
+      <section class="section tight" id="conflicts">
+        <div class="center">
+          <p class="eyebrow">Conflict Resolution</p>
+          <h2>Git stops when a human must choose.</h2>
+          <p class="lede">
+            Resolve conflicts by deleting markers, keeping the correct final
+            code, staging the file, and continuing the merge or rebase.
+          </p>
+        </div>
+        <div class="conflict-grid mt">
+          <div class="conflict-file">
+            <pre><span class="marker">&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</span>
 <span class="ours">const title = "Sign In";</span>
 <span class="marker">=======</span>
 <span class="theirs">const title = "Member Login";</span>
 <span class="marker">&gt;&gt;&gt;&gt;&gt;&gt;&gt; feature/member-login</span></pre>
-        </div>
-        <div class="card">
-          <h3>Resolution loop</h3>
-          <ul class="mini-list">
-            <li>Open conflicted files</li>
-            <li>Remove markers</li>
-            <li>Keep or combine code</li>
-            <li><code>git add</code> resolved files</li>
-            <li>Continue merge or rebase</li>
-          </ul>
-        </div>
-      </div>
-      <div class="grid two mt">
-        <div class="terminal">
-          <span>git status</span>
-          <span>git add src/Login.tsx</span>
-          <span>git merge --continue</span>
-          <span>git merge --abort</span>
-        </div>
-        <div class="terminal">
-          <span>git status</span>
-          <span>git add src/Login.tsx</span>
-          <span>git rebase --continue</span>
-          <span>git rebase --abort</span>
-        </div>
-      </div>
-    </section>
-
-    <section class="section" id="undo-help">
-      <div class="center">
-        <p class="eyebrow">Undo + Command Help</p>
-        <h2>Do not memorize Git. Make good decisions.</h2>
-        <p class="lede">Choose undo commands based on whether the change is shared, then use Git's built-in help when the exact flags matter.</p>
-      </div>
-      <div class="undo-grid mt">
-        <div class="grid">
-          <div class="card decision">
-            <h3>Has the change been pushed or shared?</h3>
-            <p>Shared history should be preserved. Local private history can be rewritten more freely.</p>
-          </div>
-          <div class="grid two">
-            <div class="card safe">
-              <span class="tag">No, still local</span>
-              <ul class="mini-list">
-                <li><code>git commit --amend</code></li>
-                <li><code>git restore --staged file</code></li>
-                <li><code>git restore file</code></li>
-                <li><code>git reset --soft HEAD~1</code></li>
-              </ul>
-            </div>
-            <div class="card danger">
-              <span class="tag">Yes, shared</span>
-              <ul class="mini-list">
-                <li><code>git revert &lt;commit&gt;</code></li>
-                <li>Avoid public history rewrite</li>
-                <li>Prefer <code>--force-with-lease</code> over force</li>
-                <li>Treat <code>reset --hard</code> as destructive</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-        <div class="manual-stack">
-          <div class="card manual-card">
-            <div class="terminal"><span>man git</span></div>
-            <p>General manual.</p>
-          </div>
-          <div class="card manual-card">
-            <div class="terminal"><span>git help rebase</span></div>
-            <p>Full command docs.</p>
-          </div>
-          <div class="card manual-card">
-            <div class="terminal"><span>git commit -h</span></div>
-            <p>Quick flag reference.</p>
           </div>
           <div class="card">
-            <h3>Inside man pages</h3>
+            <h3>Resolution loop</h3>
             <ul class="mini-list">
-              <li><code>Space</code> next page</li>
-              <li><code>/word</code> search</li>
-              <li><code>n</code> next result</li>
-              <li><code>q</code> quit</li>
+              <li>Open conflicted files</li>
+              <li>Remove markers</li>
+              <li>Keep or combine code</li>
+              <li><code>git add</code> resolved files</li>
+              <li>Continue merge or rebase</li>
             </ul>
           </div>
         </div>
-      </div>
-    </section>
+        <div class="grid two mt">
+          <div class="terminal">
+            <span>git status</span>
+            <span>git add src/Login.tsx</span>
+            <span>git merge --continue</span>
+            <span>git merge --abort</span>
+          </div>
+          <div class="terminal">
+            <span>git status</span>
+            <span>git add src/Login.tsx</span>
+            <span>git rebase --continue</span>
+            <span>git rebase --abort</span>
+          </div>
+        </div>
+      </section>
 
-    <footer class="footer">
-      Git works best when history is clear, reviews are small, and shared branches are treated carefully.
-    </footer>
-  </main>
-</body>
+      <section class="section tight" id="undo">
+        <div class="center">
+          <p class="eyebrow">Undo Decision Tree</p>
+          <h2>Choose undo commands based on sharing risk.</h2>
+          <p class="lede">
+            The most important question is whether the change has already been
+            pushed or pulled by someone else.
+          </p>
+        </div>
+        <div class="undo-grid mt">
+          <div class="grid">
+            <div class="card decision">
+              <h3>Has the change been pushed or shared?</h3>
+              <p>
+                Shared history should be preserved. Local private history can be
+                rewritten more freely.
+              </p>
+            </div>
+            <div class="grid two">
+              <div class="card safe">
+                <span class="tag">No, still local</span>
+                <ul class="mini-list">
+                  <li><code>git commit --amend</code></li>
+                  <li><code>git restore --staged file</code></li>
+                  <li><code>git restore file</code></li>
+                  <li><code>git reset --soft HEAD~1</code></li>
+                </ul>
+              </div>
+              <div class="card danger">
+                <span class="tag">Yes, shared</span>
+                <ul class="mini-list">
+                  <li><code>git revert &lt;commit&gt;</code></li>
+                  <li>Avoid public history rewrite</li>
+                  <li>Prefer <code>--force-with-lease</code> over force</li>
+                  <li>Treat <code>reset --hard</code> as destructive</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <h3>Practical rule</h3>
+            <p>
+              Use rewrite commands for local cleanup. Use
+              <code>revert</code> when history is already shared.
+            </p>
+            <div class="terminal mt">
+              <span>git add missing-file.ts</span>
+              <span>git commit --amend --no-edit</span>
+              <span>git revert abc1234</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section tight" id="guide">
+        <div class="help-grid">
+          <div>
+            <p class="eyebrow">Command-Line Guide</p>
+            <h2>Do not memorize Git. Know how to ask Git.</h2>
+            <p class="lede">
+              The command line already contains the manual, command-specific
+              docs, and quick flag references.
+            </p>
+          </div>
+          <div class="manual-stack">
+            <div class="card manual-card">
+              <div class="terminal"><span>man git</span></div>
+              <p>General manual.</p>
+            </div>
+            <div class="card manual-card">
+              <div class="terminal"><span>git help rebase</span></div>
+              <p>Full command docs.</p>
+            </div>
+            <div class="card manual-card">
+              <div class="terminal"><span>git commit -h</span></div>
+              <p>Quick flag reference.</p>
+            </div>
+            <div class="card">
+              <h3>Inside man pages</h3>
+              <ul class="mini-list">
+                <li><code>Space</code> next page</li>
+                <li><code>/word</code> search</li>
+                <li><code>n</code> next result</li>
+                <li><code>q</code> quit</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer class="footer">
+        Git works best when history is clear, reviews are small, and shared
+        branches are treated carefully.
+      </footer>
+    </main>
+  </body>
 </html>
