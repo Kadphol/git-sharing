@@ -1,0 +1,1095 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Git Knowledge Sharing - Visual Guide</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --ink: #f4f1ea;
+      --muted: #b9b1a3;
+      --paper: #171615;
+      --panel: #24211e;
+      --panel-2: #2e2a25;
+      --line: #534c43;
+      --git: #f05033;
+      --blue: #48a8d8;
+      --green: #7fb069;
+      --yellow: #e5b94e;
+      --red: #d95d5d;
+      --violet: #a98bd7;
+      --shadow: 0 24px 70px rgba(0, 0, 0, .38);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at 18% 12%, rgba(240, 80, 51, .24), transparent 28rem),
+        radial-gradient(circle at 84% 6%, rgba(72, 168, 216, .16), transparent 24rem),
+        linear-gradient(180deg, #11100f 0%, var(--paper) 42%, #100f0e 100%);
+      color: var(--ink);
+      font-family: "Avenir Next", "Segoe UI", Helvetica, Arial, sans-serif;
+      line-height: 1.45;
+      letter-spacing: 0;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: linear-gradient(180deg, rgba(0,0,0,.9), rgba(0,0,0,.2));
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .deck {
+      width: min(1180px, calc(100vw - 40px));
+      margin: 0 auto;
+      padding: 24px 0 72px;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      margin: 0 auto 22px;
+      padding: 12px 14px;
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 8px;
+      background: rgba(23, 22, 21, .82);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 10px 32px rgba(0,0,0,.22);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      font-weight: 800;
+      text-transform: uppercase;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .mark {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      background: var(--git);
+      transform: rotate(45deg);
+      position: relative;
+      flex: 0 0 auto;
+    }
+
+    .mark::before,
+    .mark::after {
+      content: "";
+      position: absolute;
+      background: var(--ink);
+    }
+
+    .mark::before {
+      width: 14px;
+      height: 2px;
+      left: 5px;
+      top: 11px;
+    }
+
+    .mark::after {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      left: 14px;
+      top: 9px;
+      box-shadow: -8px 0 0 var(--ink);
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 34px;
+      min-width: 38px;
+      padding: 0 12px;
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 6px;
+      background: rgba(255,255,255,.06);
+      color: var(--ink);
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .button:hover {
+      border-color: rgba(240,80,51,.72);
+      background: rgba(240,80,51,.16);
+    }
+
+    .counter {
+      min-width: 72px;
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .slide {
+      min-height: calc(100vh - 128px);
+      margin: 0 0 28px;
+      padding: clamp(28px, 4vw, 54px);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 8px;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.08), rgba(255,255,255,.025)),
+        linear-gradient(180deg, rgba(36,33,30,.96), rgba(24,23,21,.98));
+      box-shadow: var(--shadow);
+      display: none;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .slide.active {
+      display: block;
+      animation: slide-in .28s ease-out;
+    }
+
+    @keyframes slide-in {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .slide::after {
+      content: attr(data-number);
+      position: absolute;
+      right: 26px;
+      bottom: 18px;
+      color: rgba(255,255,255,.16);
+      font: 800 64px/1 Georgia, serif;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--git);
+      font-weight: 900;
+      text-transform: uppercase;
+      font-size: 12px;
+      margin: 0 0 14px;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 26px;
+      height: 2px;
+      background: currentColor;
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin: 0;
+      line-height: 1.02;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      max-width: 960px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(48px, 8vw, 110px);
+      font-weight: 900;
+    }
+
+    h2 {
+      max-width: 920px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(34px, 5vw, 68px);
+      font-weight: 900;
+    }
+
+    h3 {
+      font-size: clamp(18px, 2vw, 26px);
+      font-weight: 900;
+    }
+
+    .lede {
+      max-width: 820px;
+      margin: 22px 0 0;
+      color: var(--muted);
+      font-size: clamp(18px, 2vw, 25px);
+    }
+
+    .grid {
+      display: grid;
+      gap: 18px;
+    }
+
+    .two {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
+
+    .three {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .four {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .mt {
+      margin-top: clamp(24px, 4vw, 44px);
+    }
+
+    .card {
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 8px;
+      background: rgba(255,255,255,.055);
+      padding: 18px;
+      min-width: 0;
+    }
+
+    .card strong {
+      color: var(--ink);
+    }
+
+    .card p {
+      color: var(--muted);
+      margin: 10px 0 0;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 999px;
+      padding: 0 10px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    code,
+    pre {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    }
+
+    pre {
+      margin: 0;
+      padding: 16px;
+      border-radius: 8px;
+      overflow-x: auto;
+      background: #0f0f0f;
+      border: 1px solid rgba(255,255,255,.1);
+      color: #f0e8d8;
+      font-size: 14px;
+      line-height: 1.55;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.05);
+    }
+
+    .terminal::before {
+      content: "$ ";
+      color: var(--green);
+      font-weight: 900;
+    }
+
+    .diagram {
+      position: relative;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,.12);
+      background:
+        linear-gradient(135deg, rgba(240,80,51,.12), transparent 40%),
+        rgba(255,255,255,.045);
+      padding: 22px;
+      min-height: 220px;
+      overflow: hidden;
+    }
+
+    .node-row {
+      display: flex;
+      align-items: stretch;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .node {
+      flex: 1 1 0;
+      min-width: 0;
+      border: 1px solid rgba(255,255,255,.15);
+      border-radius: 8px;
+      background: rgba(20,20,20,.68);
+      padding: 16px;
+      position: relative;
+    }
+
+    .node .label {
+      display: block;
+      font-weight: 900;
+      font-size: 18px;
+    }
+
+    .node .sub {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 7px;
+    }
+
+    .arrow {
+      flex: 0 0 58px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--git);
+      font-weight: 900;
+      position: relative;
+    }
+
+    .arrow::before {
+      content: "";
+      width: 100%;
+      height: 2px;
+      background: currentColor;
+    }
+
+    .arrow::after {
+      content: "";
+      width: 10px;
+      height: 10px;
+      border-top: 2px solid currentColor;
+      border-right: 2px solid currentColor;
+      transform: rotate(45deg);
+      margin-left: -9px;
+    }
+
+    .remote-map {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+      align-items: center;
+    }
+
+    .remote {
+      grid-column: 1 / -1;
+      justify-self: center;
+      width: min(440px, 100%);
+      text-align: center;
+      border-color: rgba(240,80,51,.5);
+      background: rgba(240,80,51,.12);
+    }
+
+    .flow-steps {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .step {
+      min-height: 46px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 14px;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 8px;
+      background: rgba(255,255,255,.06);
+      font-weight: 900;
+    }
+
+    .flow-steps .arrow {
+      flex: 0 0 26px;
+    }
+
+    .strategy {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .strategy ul,
+    .clean-list {
+      margin: 10px 0 0;
+      padding: 0;
+      list-style: none;
+      color: var(--muted);
+    }
+
+    .strategy li,
+    .clean-list li {
+      margin: 8px 0;
+      padding-left: 18px;
+      position: relative;
+    }
+
+    .strategy li::before,
+    .clean-list li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: .72em;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--git);
+    }
+
+    .branch-line {
+      margin-top: 14px;
+      padding: 12px;
+      border-radius: 8px;
+      background: rgba(0,0,0,.24);
+      font-family: "SFMono-Regular", Consolas, monospace;
+      color: var(--muted);
+      font-size: 13px;
+      white-space: pre-wrap;
+    }
+
+    .hook-line {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .hook {
+      min-height: 126px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border-top: 4px solid var(--git);
+    }
+
+    .hook:nth-child(2) { border-top-color: var(--blue); }
+    .hook:nth-child(3) { border-top-color: var(--yellow); }
+    .hook:nth-child(4) { border-top-color: var(--green); }
+    .hook:nth-child(5) { border-top-color: var(--violet); }
+
+    .conflict {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .marker-head { color: var(--yellow); }
+    .marker-incoming { color: var(--blue); }
+    .marker-bad { color: var(--red); }
+
+    .decision-tree {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: 1fr 1fr;
+      align-items: start;
+    }
+
+    .question {
+      grid-column: 1 / -1;
+      justify-self: center;
+      max-width: 560px;
+      text-align: center;
+      border-color: rgba(229,185,78,.6);
+      background: rgba(229,185,78,.12);
+    }
+
+    .danger {
+      border-color: rgba(217,93,93,.58);
+      background: rgba(217,93,93,.12);
+    }
+
+    .success {
+      border-color: rgba(127,176,105,.58);
+      background: rgba(127,176,105,.12);
+    }
+
+    .command-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .kicker {
+      display: inline;
+      color: var(--git);
+      font-weight: 900;
+    }
+
+    .toc {
+      columns: 2;
+      column-gap: 34px;
+      margin-top: 28px;
+      color: var(--muted);
+      font-size: 18px;
+    }
+
+    .toc div {
+      break-inside: avoid;
+      margin: 0 0 12px;
+    }
+
+    .mini {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .footer-note {
+      margin-top: 24px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    @media (max-width: 900px) {
+      .two,
+      .three,
+      .four,
+      .remote-map,
+      .strategy,
+      .hook-line,
+      .conflict,
+      .decision-tree,
+      .command-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .remote {
+        grid-column: auto;
+      }
+
+      .node-row {
+        flex-direction: column;
+      }
+
+      .arrow {
+        flex-basis: 28px;
+        transform: rotate(90deg);
+        align-self: center;
+      }
+
+      .flow-steps .arrow {
+        display: none;
+      }
+
+      .toc {
+        columns: 1;
+      }
+
+      .topbar {
+        align-items: flex-start;
+      }
+    }
+
+    @media print {
+      body {
+        background: #fff;
+        color: #111;
+      }
+
+      body::before,
+      .topbar {
+        display: none;
+      }
+
+      .deck {
+        width: 100%;
+        padding: 0;
+      }
+
+      .slide,
+      .slide.active {
+        display: block;
+        min-height: auto;
+        page-break-after: always;
+        box-shadow: none;
+        border: 1px solid #ddd;
+        background: #fff;
+        color: #111;
+      }
+
+      .card,
+      .diagram,
+      .node {
+        background: #fff;
+        color: #111;
+        border-color: #ddd;
+      }
+
+      .card p,
+      .node .sub,
+      .mini,
+      .footer-note,
+      .toc,
+      .clean-list,
+      .strategy li {
+        color: #555;
+      }
+
+      pre {
+        background: #f6f6f6;
+        color: #111;
+        border-color: #ddd;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="deck">
+    <nav class="topbar" aria-label="Presentation controls">
+      <div class="brand"><span class="mark" aria-hidden="true"></span><span>Git Knowledge Sharing</span></div>
+      <div class="controls">
+        <button class="button" type="button" id="prev" aria-label="Previous slide">Prev</button>
+        <span class="counter" id="counter">1 / 10</span>
+        <button class="button" type="button" id="next" aria-label="Next slide">Next</button>
+      </div>
+    </nav>
+
+    <section class="slide active" data-number="01">
+      <p class="eyebrow">Internal Engineering Guide</p>
+      <h1>Git for software developers</h1>
+      <p class="lede">A practical visual walkthrough of Git concepts, team workflows, branching choices, hooks, conflict resolution, undo commands, and built-in command-line help.</p>
+      <div class="toc">
+        <div><span class="kicker">01</span> What Git is</div>
+        <div><span class="kicker">02</span> Three states</div>
+        <div><span class="kicker">03</span> Daily workflow</div>
+        <div><span class="kicker">04</span> Branching strategies</div>
+        <div><span class="kicker">05</span> Git hooks</div>
+        <div><span class="kicker">06</span> Conflict resolution</div>
+        <div><span class="kicker">07</span> Undo decision tree</div>
+        <div><span class="kicker">08</span> Command-line help</div>
+      </div>
+      <p class="footer-note">Use arrow keys or the controls above to move through the deck.</p>
+    </section>
+
+    <section class="slide" data-number="02">
+      <p class="eyebrow">Distributed Version Control</p>
+      <h2>Git is a snapshot graph every developer can carry locally.</h2>
+      <p class="lede">Each developer has a full local repository with history. The remote repository coordinates collaboration, but most Git operations happen on your machine.</p>
+
+      <div class="diagram mt remote-map">
+        <div class="node">
+          <span class="label">Developer A</span>
+          <span class="sub">Working tree + full local history</span>
+          <pre class="mt terminal">git clone
+git commit
+git push</pre>
+        </div>
+        <div class="node">
+          <span class="label">Developer B</span>
+          <span class="sub">Can branch, inspect, compare, and commit offline</span>
+          <pre class="mt terminal">git fetch
+git pull
+git merge</pre>
+        </div>
+        <div class="node">
+          <span class="label">Developer C</span>
+          <span class="sub">Own copy of commits, branches, tags, and refs</span>
+          <pre class="mt terminal">git log --oneline
+git diff</pre>
+        </div>
+        <div class="node remote">
+          <span class="label">Remote Repository</span>
+          <span class="sub">GitHub, GitLab, Bitbucket, or internal Git server</span>
+        </div>
+      </div>
+
+      <div class="grid three mt">
+        <div class="card"><span class="tag">What changed?</span><p>Diffs explain file-level changes between snapshots.</p></div>
+        <div class="card"><span class="tag">Why changed?</span><p>Commit messages and pull requests preserve intent.</p></div>
+        <div class="card"><span class="tag">Can we go back?</span><p>History, tags, revert, and reflog give recovery paths.</p></div>
+      </div>
+    </section>
+
+    <section class="slide" data-number="03">
+      <p class="eyebrow">Three States</p>
+      <h2>Git separates editing, selecting, and recording.</h2>
+      <p class="lede">This separation lets you group related work into clear commits instead of saving every file change automatically.</p>
+
+      <div class="diagram mt">
+        <div class="node-row">
+          <div class="node">
+            <span class="label">Working Directory</span>
+            <span class="sub">Files on disk. New edits start here.</span>
+            <pre class="mt terminal">git diff
+git restore file.ts</pre>
+          </div>
+          <div class="arrow" aria-hidden="true"></div>
+          <div class="node">
+            <span class="label">Staging Area</span>
+            <span class="sub">The next commit is assembled here.</span>
+            <pre class="mt terminal">git add file.ts
+git diff --staged</pre>
+          </div>
+          <div class="arrow" aria-hidden="true"></div>
+          <div class="node">
+            <span class="label">Local Repository</span>
+            <span class="sub">Committed snapshots live in history.</span>
+            <pre class="mt terminal">git commit -m "Fix login"
+git log --oneline</pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid two mt">
+        <div class="card">
+          <h3>Inspection command</h3>
+          <p><code>git status</code> is the dashboard for all three states: changed, staged, untracked, and branch position.</p>
+        </div>
+        <div class="card">
+          <h3>Selective commits</h3>
+          <p>Stage only related files or hunks so each commit tells one coherent story.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-number="04">
+      <p class="eyebrow">Daily Collaboration</p>
+      <h2>The basic workflow is a small feedback loop.</h2>
+      <p class="lede">Most teams work through short-lived branches, pull or merge requests, review, CI, and protected merges.</p>
+
+      <div class="flow-steps mt" aria-label="Basic Git workflow">
+        <span class="step">clone</span><span class="arrow"></span>
+        <span class="step">branch</span><span class="arrow"></span>
+        <span class="step">change</span><span class="arrow"></span>
+        <span class="step">add</span><span class="arrow"></span>
+        <span class="step">commit</span><span class="arrow"></span>
+        <span class="step">push</span><span class="arrow"></span>
+        <span class="step">pull request</span><span class="arrow"></span>
+        <span class="step">review</span><span class="arrow"></span>
+        <span class="step">merge</span>
+      </div>
+
+      <div class="grid two mt">
+        <pre><span class="terminal">git clone &lt;repo-url&gt;</span>
+<span class="terminal">git switch -c feature/login-page</span>
+<span class="terminal">git status</span>
+<span class="terminal">git add src/Login.tsx</span>
+<span class="terminal">git commit -m "Add login page"</span>
+<span class="terminal">git push -u origin feature/login-page</span></pre>
+        <div class="card">
+          <h3>Team habits matter</h3>
+          <ul class="clean-list">
+            <li>Small pull requests</li>
+            <li>Consistent branch names</li>
+            <li>Useful commit messages</li>
+            <li>CI before merge</li>
+            <li>Protected main branch</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-number="05">
+      <p class="eyebrow">Branching Strategies</p>
+      <h2>Choose the branch model that matches release reality.</h2>
+      <p class="lede">The best strategy is less about Git fashion and more about deployment frequency, release control, test confidence, and team size.</p>
+
+      <div class="grid two mt">
+        <div class="card">
+          <h3>Trunk-Based Development</h3>
+          <div class="branch-line">main
+ |- short-lived feature
+ |- short-lived bugfix
+ `- feature flags hide incomplete work</div>
+          <div class="strategy">
+            <div><strong>Pros</strong><ul><li>Fast integration</li><li>Fewer stale branches</li><li>Great with CI/CD</li></ul></div>
+            <div><strong>Cons</strong><ul><li>Needs discipline</li><li>Needs strong tests</li><li>Often needs flags</li></ul></div>
+            <div><strong>Use when</strong><ul><li>Deploy often</li><li>Small PRs</li><li>Main stays healthy</li></ul></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Git Flow</h3>
+          <div class="branch-line">main
+ `- develop
+    |- feature/*
+    |- release/*
+    `- hotfix/*</div>
+          <div class="strategy">
+            <div><strong>Pros</strong><ul><li>Clear release stages</li><li>Explicit hotfixes</li><li>Governance-friendly</li></ul></div>
+            <div><strong>Cons</strong><ul><li>More ceremony</li><li>Slower integration</li><li>Long-lived branches</li></ul></div>
+            <div><strong>Use when</strong><ul><li>Scheduled releases</li><li>Versioned products</li><li>Regulated delivery</li></ul></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>GitHub / GitLab Flow</h3>
+          <div class="branch-line">main
+ |- feature/*
+ |- bugfix/*
+ `- hotfix/*</div>
+          <div class="strategy">
+            <div><strong>Pros</strong><ul><li>Simple</li><li>PR-centered</li><li>Easy to teach</li></ul></div>
+            <div><strong>Cons</strong><ul><li>Main must be stable</li><li>CI discipline required</li><li>Release gates are external</li></ul></div>
+            <div><strong>Use when</strong><ul><li>Web apps</li><li>Protected main</li><li>Frequent deploys</li></ul></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Release Branches</h3>
+          <div class="branch-line">main
+ |- feature/*
+ `- release/2026.05
+    `- stabilization fixes only</div>
+          <div class="strategy">
+            <div><strong>Pros</strong><ul><li>Stabilize release</li><li>Development continues</li><li>Patchable line</li></ul></div>
+            <div><strong>Cons</strong><ul><li>Cherry-pick overhead</li><li>Stale branch risk</li><li>Needs rules</li></ul></div>
+            <div><strong>Use when</strong><ul><li>QA/UAT cycle</li><li>Controlled deploy</li><li>Bundled releases</li></ul></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-number="06">
+      <p class="eyebrow">Strategy Recommendation</p>
+      <h2>A pragmatic default for most product teams.</h2>
+
+      <div class="grid three mt">
+        <div class="card success">
+          <span class="tag">Default</span>
+          <h3 class="mt">GitHub / GitLab Flow</h3>
+          <p>Branch from main, open a PR/MR, review, pass CI, merge. Good balance of simplicity and control.</p>
+        </div>
+        <div class="card">
+          <span class="tag">Advanced</span>
+          <h3 class="mt">Trunk-Based + Flags</h3>
+          <p>Use when the team can integrate continuously and hide unfinished work behind feature flags.</p>
+        </div>
+        <div class="card">
+          <span class="tag">Heavy release</span>
+          <h3 class="mt">Git Flow / Release Branches</h3>
+          <p>Use when release timing, stabilization, or governance is more important than integration speed.</p>
+        </div>
+      </div>
+
+      <div class="diagram mt">
+        <div class="node-row">
+          <div class="node"><span class="label">High release frequency</span><span class="sub">Prefer trunk-based or GitHub Flow</span></div>
+          <div class="arrow"></div>
+          <div class="node"><span class="label">Strong CI and flags</span><span class="sub">Shorten branch lifetime</span></div>
+          <div class="arrow"></div>
+          <div class="node"><span class="label">Controlled release gates</span><span class="sub">Use release branches or Git Flow</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-number="07">
+      <p class="eyebrow">Git Hooks</p>
+      <h2>Shift quality checks earlier without making commits painful.</h2>
+      <p class="lede">Hooks are scripts that run at specific Git events. Keep local hooks fast and reliable; move slow full validation into CI.</p>
+
+      <div class="hook-line mt">
+        <div class="card hook"><h3>Write code</h3><p>Edit files locally.</p></div>
+        <div class="card hook"><h3>pre-commit</h3><p>Format, lint, type check, secret scan.</p></div>
+        <div class="card hook"><h3>commit-msg</h3><p>Validate message style such as Conventional Commits.</p></div>
+        <div class="card hook"><h3>pre-push</h3><p>Run heavier local tests before sending work upstream.</p></div>
+        <div class="card hook"><h3>CI</h3><p>Run full build, test, security, and deployment gates remotely.</p></div>
+      </div>
+
+      <div class="grid two mt">
+        <pre><span class="terminal">npm install husky --save-dev</span>
+<span class="terminal">npx husky init</span>
+<span class="terminal">echo "npm run lint" &gt; .husky/pre-commit</span></pre>
+        <div class="card">
+          <h3>A good hook is</h3>
+          <ul class="clean-list">
+            <li>Fast enough for daily use</li>
+            <li>Reliable on every developer machine</li>
+            <li>Clear when it fails</li>
+            <li>Useful enough to justify blocking</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-number="08">
+      <p class="eyebrow">Conflict Resolution</p>
+      <h2>A conflict is Git asking for a human decision.</h2>
+      <p class="lede">Git can merge most changes. It stops when both sides changed the same line or nearby lines and there is no safe automatic choice.</p>
+
+      <div class="conflict mt">
+        <pre><span class="marker-bad">&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</span>
+const title = "Sign In";
+<span class="marker-bad">=======</span>
+const title = "Member Login";
+<span class="marker-bad">&gt;&gt;&gt;&gt;&gt;&gt;&gt; feature/member-login</span></pre>
+
+        <div class="card">
+          <h3>Resolution loop</h3>
+          <ul class="clean-list">
+            <li>Open conflicted files</li>
+            <li>Remove conflict markers</li>
+            <li>Keep or combine the correct code</li>
+            <li>Stage resolved files</li>
+            <li>Continue merge or rebase</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="grid two mt">
+        <pre><span class="terminal">git status</span>
+<span class="terminal">git add src/Login.tsx</span>
+<span class="terminal">git merge --continue</span>
+<span class="terminal">git merge --abort</span></pre>
+        <pre><span class="terminal">git status</span>
+<span class="terminal">git add src/Login.tsx</span>
+<span class="terminal">git rebase --continue</span>
+<span class="terminal">git rebase --abort</span></pre>
+      </div>
+    </section>
+
+    <section class="slide" data-number="09">
+      <p class="eyebrow">Undo Decision Tree</p>
+      <h2>Pick the undo command based on sharing risk.</h2>
+      <p class="lede">The key question is whether the change has already been pushed or pulled by someone else.</p>
+
+      <div class="decision-tree mt">
+        <div class="card question">
+          <h3>Has the change been pushed or shared?</h3>
+          <p>Shared history should be preserved. Local private history can be rewritten more freely.</p>
+        </div>
+        <div class="card success">
+          <span class="tag">No, still local</span>
+          <ul class="clean-list">
+            <li><code>git commit --amend</code> fixes the last commit</li>
+            <li><code>git restore --staged file</code> unstages</li>
+            <li><code>git restore file</code> discards file edits</li>
+            <li><code>git reset --soft HEAD~1</code> keeps changes staged</li>
+            <li><code>git reset HEAD~1</code> keeps changes unstaged</li>
+          </ul>
+        </div>
+        <div class="card danger">
+          <span class="tag">Yes, shared</span>
+          <ul class="clean-list">
+            <li><code>git revert &lt;commit&gt;</code> creates a new undo commit</li>
+            <li>Avoid rewriting public history</li>
+            <li>Use <code>--force-with-lease</code> only when the team agrees</li>
+            <li>Be very careful with <code>git reset --hard</code></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="grid two mt">
+        <pre><span class="terminal">git add missing-file.ts</span>
+<span class="terminal">git commit --amend --no-edit</span>
+<span class="terminal">git reset --soft HEAD~1</span></pre>
+        <pre><span class="terminal">git revert abc1234</span>
+<span class="terminal">git push origin main</span></pre>
+      </div>
+    </section>
+
+    <section class="slide" data-number="10">
+      <p class="eyebrow">Command-Line Help</p>
+      <h2>You do not need to memorize Git. You need to know where Git explains itself.</h2>
+
+      <div class="command-grid mt">
+        <div class="card">
+          <h3>Manual entry point</h3>
+          <pre class="mt terminal">man git</pre>
+          <p>Start with the general Git manual.</p>
+        </div>
+        <div class="card">
+          <h3>Command manual</h3>
+          <pre class="mt terminal">git help rebase</pre>
+          <p>Open full docs for a specific command.</p>
+        </div>
+        <div class="card">
+          <h3>Quick flags</h3>
+          <pre class="mt terminal">git commit -h</pre>
+          <p>See concise option help in the terminal.</p>
+        </div>
+      </div>
+
+      <div class="grid two mt">
+        <div class="card">
+          <h3>Inside man pages</h3>
+          <ul class="clean-list">
+            <li><code>Space</code> next page</li>
+            <li><code>b</code> previous page</li>
+            <li><code>/word</code> search</li>
+            <li><code>n</code> next result</li>
+            <li><code>q</code> quit</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Closing rule</h3>
+          <p>Use history rewriting for local cleanup. Use review, CI, protected branches, and revert for shared collaboration.</p>
+          <p class="mini">Clear Git habits reduce review cost, conflict cost, and release risk.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const slides = Array.from(document.querySelectorAll(".slide"));
+    const counter = document.querySelector("#counter");
+    const prev = document.querySelector("#prev");
+    const next = document.querySelector("#next");
+    let index = 0;
+
+    function showSlide(nextIndex) {
+      index = Math.max(0, Math.min(slides.length - 1, nextIndex));
+      slides.forEach((slide, slideIndex) => {
+        slide.classList.toggle("active", slideIndex === index);
+      });
+      counter.textContent = `${index + 1} / ${slides.length}`;
+      prev.disabled = index === 0;
+      next.disabled = index === slides.length - 1;
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    prev.addEventListener("click", () => showSlide(index - 1));
+    next.addEventListener("click", () => showSlide(index + 1));
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "ArrowRight" || event.key === "PageDown" || event.key === " ") {
+        event.preventDefault();
+        showSlide(index + 1);
+      }
+      if (event.key === "ArrowLeft" || event.key === "PageUp") {
+        event.preventDefault();
+        showSlide(index - 1);
+      }
+      if (event.key === "Home") {
+        event.preventDefault();
+        showSlide(0);
+      }
+      if (event.key === "End") {
+        event.preventDefault();
+        showSlide(slides.length - 1);
+      }
+    });
+
+    showSlide(0);
+  </script>
+</body>
+</html>
