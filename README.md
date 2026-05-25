@@ -40,6 +40,17 @@ When using the local preview server, open:
 http://localhost:8765/git-knowledge-sharing-presentation-slides.html
 ```
 
+## Workshop Runbook
+
+For a hands-on session, follow the presenter runbook:
+
+```text
+WORKSHOP_RUNBOOK.md
+```
+
+The runbook matches the presentation sections and provides copy-paste commands,
+facilitator notes, expected observations, reset steps, and discussion prompts.
+
 ## Repository Contents
 
 - `git-knowledge-sharing-presentation.html` - scrolling visual guide for the session.
@@ -47,6 +58,7 @@ http://localhost:8765/git-knowledge-sharing-presentation-slides.html
 - `git-knowledge-sharing-script.md` - speaker script and source material.
 - `git-workshop-guide.md` - facilitator guide for a longer workshop format.
 - `git-workshop-visual.md` - visual aid markdown with Git diagrams.
+- `WORKSHOP_RUNBOOK.md` - presentation-aligned hands-on runbook and guidelines.
 - `short-note.md` - shorter notes for quick reference.
 - `assets/` - images used by the HTML guide.
 
