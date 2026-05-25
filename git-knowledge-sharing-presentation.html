@@ -121,33 +121,7 @@
         width: 24px;
         height: 24px;
         flex: 0 0 auto;
-        border-radius: 6px;
-        background: var(--git);
-        position: relative;
-        transform: rotate(45deg);
-      }
-
-      .mark::before,
-      .mark::after {
-        content: "";
-        position: absolute;
-        background: var(--ink);
-      }
-
-      .mark::before {
-        width: 14px;
-        height: 2px;
-        left: 5px;
-        top: 11px;
-      }
-
-      .mark::after {
-        width: 5px;
-        height: 5px;
-        left: 14px;
-        top: 9px;
-        border-radius: 50%;
-        box-shadow: -8px 0 0 var(--ink);
+        display: block;
       }
 
       .nav-links {
@@ -771,10 +745,16 @@
   <body>
     <nav class="site-nav" aria-label="Page navigation">
       <div class="nav-shell">
-        <a class="brand" href="#top"
-          ><span class="mark" aria-hidden="true"></span
-          ><span>Git Visual Guide</span></a
-        >
+        <a class="brand" href="#top">
+          <svg class="mark" aria-hidden="true" viewBox="0 0 78 78" focusable="false">
+            <path
+              fill="#f03c2e"
+              transform="translate(10 10) rotate(-45 29 29)"
+              d="M5,58c-2.76142,0 -5,-2.23858 -5,-5v-48c0,-2.76142 2.23858,-5 5,-5h33v12.54404c-2.06553,0.94801 -3.5,3.03446 -3.5,5.45596c0,0.73514 0.13221,1.43941 0.37415,2.09031l-15.28384,15.28384c-0.6509,-0.24194 -1.35517,-0.37415 -2.09031,-0.37415c-3.31371,0 -6,2.68629 -6,6c0,3.31371 2.68629,6 6,6c3.31371,0 6,-2.68629 6,-6c0,-0.73514 -0.13221,-1.43941 -0.37415,-2.09031l14.87415,-14.87415l0,11.50851c-2.06553,0.94801 -3.5,3.03446 -3.5,5.45596c0,3.31371 2.68629,6 6,6c3.31371,0 6,-2.68629 6,-6c0,-2.42149 -1.43447,-4.50795 -3.5,-5.45596l0,-12.08808c2.06553,-0.94801 3.5,-3.03446 3.5,-5.45596c0,-2.42149 -1.43447,-4.50795 -3.5,-5.45596l0,-12.54404h10c2.76142,0 5,2.23858 5,5v48c0,2.76142 -2.23858,5 -5,5z"
+            />
+          </svg>
+          <span>Git Visual Guide</span>
+        </a>
         <div class="nav-links">
           <a href="#internal">Internal</a>
           <a href="#states">States</a>
