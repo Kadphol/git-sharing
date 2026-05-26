@@ -1,0 +1,1136 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Git Knowledge Sharing - Mobile Speaker Notes</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23f05033'/%3E%3Cpath d='M21 32h22M32 21v22' stroke='%23fff7ed' stroke-width='6' stroke-linecap='round'/%3E%3C/svg%3E"
+    />
+    <style>
+      :root {
+        color-scheme: dark;
+        --ink: #fff8ed;
+        --muted: #c9bca9;
+        --paper: #11100f;
+        --panel: #201d19;
+        --panel-strong: #2b251f;
+        --line: rgba(255, 255, 255, 0.15);
+        --git: #f05033;
+        --blue: #55b8d6;
+        --green: #8fc46f;
+        --yellow: #edc85a;
+        --red: #e26a62;
+        --violet: #b49be5;
+        --shadow: 0 18px 48px rgba(0, 0, 0, 0.34);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+        scroll-padding-top: 184px;
+      }
+
+      body {
+        margin: 0;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at 10% 0%, rgba(240, 80, 51, 0.25), transparent 23rem),
+          radial-gradient(circle at 92% 12%, rgba(85, 184, 214, 0.18), transparent 20rem),
+          linear-gradient(180deg, #0c0b0a 0%, var(--paper) 48%, #15120f 100%);
+        font-family: "Avenir Next", "Segoe UI", Helvetica, Arial, sans-serif;
+        line-height: 1.5;
+        letter-spacing: 0;
+        overflow-x: hidden;
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        background-image:
+          linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+        background-size: 34px 34px;
+        mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.78), rgba(0, 0, 0, 0.12));
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        padding: 10px 12px 8px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+        background: rgba(13, 12, 11, 0.92);
+        backdrop-filter: blur(16px);
+      }
+
+      .topbar-main {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 10px;
+        align-items: center;
+        width: 100%;
+        max-width: 960px;
+        margin: 0 auto;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 0;
+      }
+
+      .mark {
+        width: 27px;
+        height: 27px;
+        flex: 0 0 auto;
+      }
+
+      .brand-text {
+        min-width: 0;
+      }
+
+      .kicker {
+        display: block;
+        color: var(--git);
+        font-size: 11px;
+        font-weight: 900;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        margin: 1px 0 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 19px;
+        line-height: 1.05;
+        letter-spacing: 0;
+      }
+
+      .progress {
+        min-width: 58px;
+        padding: 7px 9px;
+        border: 1px solid rgba(240, 80, 51, 0.48);
+        border-radius: 8px;
+        background: rgba(240, 80, 51, 0.12);
+        color: #ffe5dd;
+        font-size: 12px;
+        font-weight: 900;
+        text-align: center;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .quick-actions,
+      .section-nav {
+        display: flex;
+        gap: 8px;
+        width: 100%;
+        max-width: 960px;
+        margin: 9px auto 0;
+        overflow-x: auto;
+        padding-bottom: 3px;
+        scrollbar-width: none;
+      }
+
+      .quick-actions::-webkit-scrollbar,
+      .section-nav::-webkit-scrollbar {
+        display: none;
+      }
+
+      .action,
+      .section-nav a {
+        min-height: 34px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 auto;
+        padding: 0 11px;
+        border: 1px solid rgba(255, 255, 255, 0.13);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.06);
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 900;
+        white-space: nowrap;
+      }
+
+      .action.primary {
+        border-color: rgba(85, 184, 214, 0.5);
+        background: rgba(85, 184, 214, 0.12);
+        color: #daf7ff;
+      }
+
+      .section-nav a.is-active {
+        border-color: rgba(240, 80, 51, 0.72);
+        background: rgba(240, 80, 51, 0.18);
+        color: var(--ink);
+      }
+
+      .page {
+        width: calc(100% - 24px);
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 18px 0 54px;
+      }
+
+      .intro {
+        display: grid;
+        gap: 12px;
+        padding: 18px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background:
+          linear-gradient(135deg, rgba(240, 80, 51, 0.16), transparent 52%),
+          rgba(255, 255, 255, 0.055);
+        box-shadow: var(--shadow);
+      }
+
+      .intro h2,
+      .note-section h2 {
+        margin: 0;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(24px, 6vw, 34px);
+        line-height: 1.08;
+        letter-spacing: 0;
+        overflow-wrap: anywhere;
+      }
+
+      .intro h2 {
+        max-width: 13ch;
+      }
+
+      .note-section h2 {
+        max-width: 15ch;
+      }
+
+      .intro p,
+      .note-section p {
+        margin: 0;
+        color: #dfd3c2;
+        max-width: 22rem;
+        overflow-wrap: break-word;
+      }
+
+      .tip-row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .tip {
+        min-height: 30px;
+        display: inline-flex;
+        align-items: center;
+        padding: 0 10px;
+        border: 1px solid rgba(143, 196, 111, 0.46);
+        border-radius: 999px;
+        background: rgba(143, 196, 111, 0.12);
+        color: #e7ffd8;
+        font-size: 12px;
+        font-weight: 900;
+      }
+
+      .note-section {
+        margin-top: 18px;
+        padding: 18px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.035)),
+          rgba(32, 29, 25, 0.88);
+        box-shadow: var(--shadow);
+      }
+
+      .section-head {
+        display: grid;
+        gap: 8px;
+        margin-bottom: 15px;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--git);
+        font-size: 12px;
+        font-weight: 900;
+        text-transform: uppercase;
+      }
+
+      .eyebrow::before {
+        content: "";
+        width: 24px;
+        height: 2px;
+        background: currentColor;
+      }
+
+      .grid {
+        display: grid;
+        gap: 12px;
+      }
+
+      .cue {
+        padding: 13px;
+        border: 1px solid rgba(255, 255, 255, 0.13);
+        border-radius: 8px;
+        background: rgba(0, 0, 0, 0.24);
+      }
+
+      .cue h3,
+      details summary {
+        margin: 0 0 8px;
+        color: var(--ink);
+        font-size: 14px;
+        font-weight: 900;
+        text-transform: uppercase;
+      }
+
+      .cue p,
+      .cue li {
+        color: #dfd3c2;
+        font-size: 15px;
+        max-width: 22rem;
+      }
+
+      .cue ul {
+        margin: 0;
+        padding-left: 18px;
+      }
+
+      .cue li + li {
+        margin-top: 6px;
+      }
+
+      .cue.goal {
+        border-color: rgba(85, 184, 214, 0.45);
+        background: rgba(85, 184, 214, 0.1);
+      }
+
+      .cue.watch {
+        border-color: rgba(237, 200, 90, 0.48);
+        background: rgba(237, 200, 90, 0.1);
+      }
+
+      .cue.reset {
+        border-color: rgba(226, 106, 98, 0.46);
+        background: rgba(226, 106, 98, 0.1);
+      }
+
+      .callout {
+        padding: 14px;
+        border-left: 4px solid var(--green);
+        border-radius: 8px;
+        background: rgba(143, 196, 111, 0.1);
+        color: #e7ffd8;
+        font-weight: 800;
+      }
+
+      details {
+        border: 1px solid rgba(255, 255, 255, 0.13);
+        border-radius: 8px;
+        background: rgba(0, 0, 0, 0.2);
+        overflow: hidden;
+      }
+
+      details summary {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin: 0;
+        padding: 13px;
+        cursor: pointer;
+        list-style: none;
+      }
+
+      details summary::-webkit-details-marker {
+        display: none;
+      }
+
+      details summary::after {
+        content: "+";
+        color: var(--git);
+        font-size: 20px;
+        line-height: 1;
+      }
+
+      details[open] summary::after {
+        content: "-";
+      }
+
+      .detail-body {
+        display: grid;
+        gap: 12px;
+        padding: 0 13px 13px;
+      }
+
+      .code-card {
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-radius: 8px;
+        background: #0d0d0c;
+      }
+
+      .code-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 8px 9px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.045);
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 900;
+        text-transform: uppercase;
+      }
+
+      .copy-btn {
+        min-height: 30px;
+        padding: 0 10px;
+        border: 1px solid rgba(240, 80, 51, 0.5);
+        border-radius: 6px;
+        background: rgba(240, 80, 51, 0.13);
+        color: var(--ink);
+        font: inherit;
+        font-size: 12px;
+        font-weight: 900;
+        cursor: pointer;
+      }
+
+      pre {
+        margin: 0;
+        padding: 13px;
+        overflow-x: auto;
+        color: #f6ead7;
+        font: 13px/1.62 "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+        white-space: pre;
+      }
+
+      code {
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      }
+
+      .section-link {
+        display: inline-flex;
+        width: fit-content;
+        min-height: 34px;
+        align-items: center;
+        padding: 0 11px;
+        border: 1px solid rgba(85, 184, 214, 0.5);
+        border-radius: 999px;
+        background: rgba(85, 184, 214, 0.1);
+        color: #d9f7ff;
+        font-size: 12px;
+        font-weight: 900;
+      }
+
+      @media (min-width: 760px) {
+        html {
+          scroll-padding-top: 148px;
+        }
+
+        .topbar {
+          padding-inline: 20px;
+        }
+
+        .page {
+          width: calc(100% - 40px);
+          max-width: 960px;
+        }
+
+        .note-section,
+        .intro {
+          padding: 24px;
+        }
+
+        .grid.two {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        pre {
+          font-size: 14px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="topbar-main">
+        <a class="brand" href="#top" aria-label="Back to top">
+          <svg class="mark" aria-hidden="true" viewBox="0 0 78 78" focusable="false">
+            <path
+              fill="#f03c2e"
+              transform="translate(10 10) rotate(-45 29 29)"
+              d="M5,58c-2.76142,0 -5,-2.23858 -5,-5v-48c0,-2.76142 2.23858,-5 5,-5h33v12.54404c-2.06553,0.94801 -3.5,3.03446 -3.5,5.45596c0,0.73514 0.13221,1.43941 0.37415,2.09031l-15.28384,15.28384c-0.6509,-0.24194 -1.35517,-0.37415 -2.09031,-0.37415c-3.31371,0 -6,2.68629 -6,6c0,3.31371 2.68629,6 6,6c3.31371,0 6,-2.68629 6,-6c0,-0.73514 -0.13221,-1.43941 -0.37415,-2.09031l14.87415,-14.87415l0,11.50851c-2.06553,0.94801 -3.5,3.03446 -3.5,5.45596c0,3.31371 2.68629,6 6,6c3.31371,0 6,-2.68629 6,-6c0,-2.42149 -1.43447,-4.50795 -3.5,-5.45596l0,-12.08808c2.06553,-0.94801 3.5,-3.03446 3.5,-5.45596c0,-2.42149 -1.43447,-4.50795 -3.5,-5.45596l0,-12.54404h10c2.76142,0 5,2.23858 5,5v48c0,2.76142 -2.23858,5 -5,5z"
+            />
+          </svg>
+          <span class="brand-text">
+            <span class="kicker">Mobile runbook</span>
+            <h1>Speaker notes</h1>
+          </span>
+        </a>
+        <div class="progress" aria-live="polite">1 / 10</div>
+      </div>
+      <nav class="quick-actions" aria-label="Quick links">
+        <a class="action primary" href="git-knowledge-sharing-presentation.html">Presentation</a>
+        <a class="action" href="WORKSHOP_RUNBOOK.md">Full runbook</a>
+        <a class="action" href="index.html">Home</a>
+      </nav>
+      <nav class="section-nav" aria-label="Speaker note sections">
+        <a href="#opening">Opening</a>
+        <a href="#internal">Internal</a>
+        <a href="#states">States</a>
+        <a href="#workflow">Workflow</a>
+        <a href="#branching">Branching</a>
+        <a href="#hooks">Hooks</a>
+        <a href="#conflicts">Conflicts</a>
+        <a href="#undo">Undo</a>
+        <a href="#guide">Guide</a>
+        <a href="#reset">Reset</a>
+      </nav>
+    </header>
+
+    <main class="page" id="top">
+      <section class="intro" aria-labelledby="intro-title">
+        <p class="eyebrow">Phone companion</p>
+        <h2 id="intro-title">Slides on laptop. Runbook on phone.</h2>
+        <p>
+          Condensed presenter cues, command blocks, expected observations, and
+          reset steps for the live Git session.
+        </p>
+        <div class="tip-row" aria-label="Presenter setup">
+          <span class="tip">Laptop: presentation</span>
+          <span class="tip">Phone: speaker notes</span>
+          <span class="tip">Terminal: taskly demo</span>
+        </div>
+      </section>
+
+      <section class="note-section" id="opening" data-title="Opening">
+        <div class="section-head">
+          <p class="eyebrow">Opening</p>
+          <h2>Set the map before commands.</h2>
+          <a class="section-link" href="git-knowledge-sharing-presentation.html#top">Open presentation section</a>
+        </div>
+        <div class="grid two">
+          <div class="cue goal">
+            <h3>Purpose</h3>
+            <p>
+              Frame Git as a model: objects, states, workflow, branching
+              choices, quality gates, conflicts, and undo decisions.
+            </p>
+          </div>
+          <div class="cue">
+            <h3>Presenter cues</h3>
+            <ul>
+              <li>Ask who has used <code>git add</code>, seen a conflict, or can explain <code>HEAD</code>.</li>
+              <li>Tell the room that terminal commands are evidence; the presentation stays the guide.</li>
+              <li>Keep the pace conceptual before opening the demo repository.</li>
+            </ul>
+          </div>
+        </div>
+        <p class="callout">Transition: Before commands, let's look at what Git stores.</p>
+      </section>
+
+      <section class="note-section" id="internal" data-title="Git Internal">
+        <div class="section-head">
+          <p class="eyebrow">Demo 1</p>
+          <h2>Commits point to snapshots.</h2>
+          <a class="section-link" href="git-knowledge-sharing-presentation.html#internal">Open presentation section</a>
+        </div>
+        <div class="grid">
+          <div class="cue goal">
+            <h3>Purpose</h3>
+            <p>Show that commits point to trees, trees point to blobs, and refs point to commits.</p>
+          </div>
+          <div class="code-card">
+            <div class="code-head"><span>Setup</span><button class="copy-btn" type="button">Copy</button></div>
+            <pre><code>cd /Users/kadphol/Documents/git-sharing/taskly
+git switch main
+git status --short</code></pre>
+          </div>
+          <div class="code-card">
+            <div class="code-head"><span>Presenter commands</span><button class="copy-btn" type="button">Copy</button></div>
+            <pre><code>git log --oneline -5
+git cat-file -p HEAD
+git cat-file -p HEAD^{tree}
+git cat-file -p HEAD:src/tasks.js
+find .git/objects -maxdepth 1 -type d | sort | head
+cat .git/refs/heads/main
+cat .git/HEAD</code></pre>
+          </div>
+          <div class="cue watch">
+            <h3>Watch for</h3>
+            <ul>
+              <li><code>HEAD</code> is a commit object with metadata, parent, and tree pointer.</li>
+              <li><code>HEAD^{tree}</code> maps names to tree and blob IDs.</li>
+              <li>Branch refs are plain pointers to commit SHAs.</li>
+            </ul>
+          </div>
+        </div>
+        <p class="callout">Transition: Now let's see how a change becomes a snapshot.</p>
+      </section>
+
+      <section class="note-section" id="states" data-title="Three States">
+        <div class="section-head">
+          <p class="eyebrow">Demo 2</p>
+          <h2>Working directory, staging, repository.</h2>
+          <a class="section-link" href="git-knowledge-sharing-presentation.html#states">Open presentation section</a>
+        </div>
+        <div class="grid">
+          <div class="cue goal">
+            <h3>Purpose</h3>
+            <p>Demonstrate how Git separates edited files, staged changes, and committed history.</p>
+          </div>
+          <div class="code-card">
+            <div class="code-head"><span>Setup</span><button class="copy-btn" type="button">Copy</button></div>
+            <pre><code>cd /Users/kadphol/Documents/git-sharing/taskly
+git switch main
+git reset --hard workshop-main
+git branch -D demo/three-states 2&gt;/dev/null || true
+git switch -c demo/three-states</code></pre>
+          </div>
+          <div class="code-card">
+            <div class="code-head"><span>Presenter commands</span><button class="copy-btn" type="button">Copy</button></div>
+            <pre><code>git status
+
+printf '\n# NEW SECTION\n' &gt;&gt; README.md
+git status
+git diff
+
+git add README.md
+git status
+git diff --staged
+
+git commit -m "docs: add new section header"
+git log --oneline -3</code></pre>
+          </div>
+          <div class="cue watch">
+            <h3>Watch for</h3>
+            <ul>
+              <li><code>git diff</code> is unstaged work.</li>
+              <li><code>git diff --staged</code> is exactly what the next commit will record.</li>
+              <li>A commit records staged content only.</li>
+            </ul>
+          </div>
+          <div class="code-card">
+            <div class="code-head"><span>Reset</span><button class="copy-btn" type="button">Copy</button></div>
+            <pre><code>git switch main
+git branch -D demo/three-states
+git reset --hard workshop-main</code></pre>
+          </div>
+        </div>
+        <p class="callout">Transition: Once we can make a clean commit, we can put it into team workflow.</p>
+      </section>
+
+      <section class="note-section" id="workflow" data-title="Workflow">
+        <div class="section-head">
+          <p class="eyebrow">Demo 3</p>
+          <h2>Branch, change, stage, commit, push.</h2>
+          <a class="section-link" href="git-knowledge-sharing-presentation.html#workflow">Open presentation section</a>
+        </div>
+        <div class="grid">
+          <div class="cue goal">
+            <h3>Purpose</h3>
+            <p>Walk through feature-branch work without requiring a real remote repository.</p>
+          </div>
+          <div class="code-card">
+            <div class="code-head"><span>Setup</span><button class="copy-btn" type="button">Copy</button></div>
+            <pre><code>cd /Users/kadphol/Documents/git-sharing/taskly
+git switch main
+git reset --hard workshop-main
+git branch -D demo/basic-workflow 2&gt;/dev/null || true</code></pre>
+          </div>
+          <details open>
+            <summary>Presenter commands</summary>
+            <div class="detail-body">
+              <div class="code-card">
+                <div class="code-head"><span>Create and commit branch work</span><button class="copy-btn" type="button">Copy</button></div>
+                <pre><code>git switch -c demo/basic-workflow
+git branch --show-current
+
+cat &gt; src/labels.js &lt;&lt;'EOF'
+function taskLabel(task) {
+  return task.done ? '[done]' : '[todo]';
+}
+module.exports = { taskLabel };
+EOF
+
+git status
+git add src/labels.js
+git commit -m "feat(tasks): add task label helper"
+git log --oneline --graph --decorate -4</code></pre>
+              </div>
+              <div class="code-card">
+                <div class="code-head"><span>Remote teaching point</span><button class="copy-btn" type="button">Copy</button></div>
+                <pre><code>git remote -v
+git push -u origin demo/basic-workflow</code></pre>
+              </div>
+            </div>
+          </details>
+          <div class="cue watch">
+            <h3>Watch for</h3>
+            <ul>
+              <li>The first block creates local feature branch history.</li>
+              <li><code>git remote -v</code> is empty in this local demo.</li>
+              <li>The push fails unless a remote exists; use that to explain publishing.</li>
+            </ul>
+          </div>
+          <div class="code-card">
+            <div class="code-head"><span>Reset</span><button class="copy-btn" type="button">Copy</button></div>
+            <pre><code>git switch main
+git branch -D demo/basic-workflow
+git reset --hard workshop-main</code></pre>
+          </div>
+        </div>
+        <p class="callout">Transition: Branching is not only a command; it is a release agreement.</p>
+      </section>
+
+      <section class="note-section" id="branching" data-title="Branching">
+        <div class="section-head">
+          <p class="eyebrow">Discussion</p>
+          <h2>Choose the collaboration model.</h2>
+          <a class="section-link" href="git-knowledge-sharing-presentation.html#branching-intro">Open presentation section</a>
+        </div>
+        <div class="grid two">
+          <div class="cue goal">
+            <h3>Purpose</h3>
+            <p>Use vocabulary and tradeoffs. Do not turn this part into a command demo.</p>
+          </div>
+          <div class="cue">
+            <h3>Prompt the room</h3>
+            <ul>
+              <li>Which strategy do we use today?</li>
+              <li>How long do branches normally live?</li>
+              <li>Where does release control happen?</li>
+              <li>What bottleneck hurts most: review, CI, QA/UAT, or approval?</li>
+            </ul>
+          </div>
+          <div class="cue watch">
+            <h3>Recommendation</h3>
+            <p>
+              Default to GitHub/GitLab Flow. Move toward trunk-based development
+              when CI and feature flags are strong. Add release branches when
+              release governance needs them.
+            </p>
+          </div>
+          <div class="cue">
+            <h3>Presentation jumps</h3>
+            <ul>
+              <li><a href="git-knowledge-sharing-presentation.html#trunk">Trunk-Based Development</a></li>
+              <li><a href="git-knowledge-sharing-presentation.html#git-flow">Git Flow</a></li>
+              <li><a href="git-knowledge-sharing-presentation.html#github-flow">GitHub Flow</a></li>
+              <li><a href="git-knowledge-sharing-presentation.html#gitlab-flow">GitLab Flow</a></li>
+              <li><a href="git-knowledge-sharing-presentation.html#release">Release Branches</a></li>
+            </ul>
+          </div>
+        </div>
+        <p class="callout">Transition: Whatever branching model we choose, quality checks should happen before bad code reaches main.</p>
+      </section>
+
+      <section class="note-section" id="hooks" data-title="Hooks">
+        <div class="section-head">
+          <p class="eyebrow">Demo 4</p>
+          <h2>Fast local quality gates.</h2>
+          <a class="section-link" href="git-knowledge-sharing-presentation.html#hooks">Open presentation section</a>
+        </div>
+        <div class="grid">
+          <div class="cue goal">
+            <h3>Purpose</h3>
+            <p>Explain where hooks fit and why local hooks should be fast and clear.</p>
+          </div>
+          <div class="code-card">
+            <div class="code-head"><span>Setup</span><button class="copy-btn" type="button">Copy</button></div>
+            <pre><code>cd /Users/kadphol/Documents/git-sharing/taskly
+git switch main
+git reset --hard workshop-main
+git branch -D demo/hooks-example 2&gt;/dev/null || true
+git switch -c demo/hooks-example</code></pre>
+          </div>
+          <details open>
+            <summary>Presenter commands</summary>
+            <div class="detail-body">
+              <div class="code-card">
+                <div class="code-head"><span>Create hook</span><button class="copy-btn" type="button">Copy</button></div>
+                <pre><code>mkdir -p .git/hooks
+
+cat &gt; .git/hooks/pre-commit &lt;&lt;'EOF'
+#!/usr/bin/env sh
+echo "pre-commit: checking for TODO markers"
+if grep -R "TODO" src &gt;/dev/null 2&gt;&amp;1; then
+  echo "pre-commit: TODO marker found"
+  exit 1
+fi
+EOF
+chmod +x .git/hooks/pre-commit</code></pre>
+              </div>
+              <div class="code-card">
+                <div class="code-head"><span>Trigger hook</span><button class="copy-btn" type="button">Copy</button></div>
+                <pre><code>printf '\n// TODO: validate input\n' &gt;&gt; src/tasks.js
+git add src/tasks.js
+git commit -m "demo: trigger hook"
+
+git status --short
+git restore --staged src/tasks.js
+git restore src/tasks.js
+git status --short</code></pre>
+              </div>
+            </div>
+          </details>
+          <div class="cue watch">
+            <h3>Watch for</h3>
+            <ul>
+              <li>The commit is blocked by a non-zero hook exit.</li>
+              <li>Hooks live in <code>.git/hooks</code> for this local repo.</li>
+              <li>Real teams often use Husky, Lefthook, pre-commit, lint-staged, or CI.</li>
+            </ul>
+          </div>
+          <div class="code-card">
+            <div class="code-head"><span>Reset</span><button class="copy-btn" type="button">Copy</button></div>
+            <pre><code>rm -f .git/hooks/pre-commit
+git restore --staged src/tasks.js 2&gt;/dev/null || true
+git restore src/tasks.js
+git switch main
+git branch -D demo/hooks-example</code></pre>
+          </div>
+        </div>
+        <p class="callout">Transition: Hooks catch predictable issues. Conflicts need a human decision.</p>
+      </section>
+
+      <section class="note-section" id="conflicts" data-title="Conflicts">
+        <div class="section-head">
+          <p class="eyebrow">Demo 5</p>
+          <h2>Conflict markers are a decision request.</h2>
+          <a class="section-link" href="git-knowledge-sharing-presentation.html#conflicts">Open presentation section</a>
+        </div>
+        <div class="grid">
+          <div class="cue goal">
+            <h3>Purpose</h3>
+            <p>Trigger a real conflict, inspect markers, abort once, then resolve the conflict.</p>
+          </div>
+          <div class="code-card">
+            <div class="code-head"><span>Setup</span><button class="copy-btn" type="button">Copy</button></div>
+            <pre><code>cd /Users/kadphol/Documents/git-sharing/taskly
+git switch main
+git reset --hard workshop-main
+git branch -D demo/conflict-abort-main demo/conflict-main 2&gt;/dev/null || true</code></pre>
+          </div>
+          <details open>
+            <summary>Presenter commands</summary>
+            <div class="detail-body">
+              <div class="code-card">
+                <div class="code-head"><span>Inspect both sides</span><button class="copy-btn" type="button">Copy</button></div>
+                <pre><code>git show workshop-main:src/greet.js
+git show workshop-feature-greeting:src/greet.js</code></pre>
+              </div>
+              <div class="code-card">
+                <div class="code-head"><span>Abort path</span><button class="copy-btn" type="button">Copy</button></div>
+                <pre><code>git switch -c demo/conflict-abort-main workshop-main
+git merge feature/greeting
+git status
+cat src/greet.js
+git merge --abort
+git status --short</code></pre>
+              </div>
+              <div class="code-card">
+                <div class="code-head"><span>Resolve path</span><button class="copy-btn" type="button">Copy</button></div>
+                <pre><code>git switch -c demo/conflict-main workshop-main
+git merge feature/greeting
+git status
+cat src/greet.js
+
+cat &gt; src/greet.js &lt;&lt;'EOF'
+function greet(name) {
+  console.log('Good morning, ' + name + '! Welcome back.');
+}
+module.exports = { greet };
+EOF
+
+git add src/greet.js
+git commit --no-edit
+git log --oneline --graph --decorate -6
+node src/app.js</code></pre>
+              </div>
+            </div>
+          </details>
+          <div class="cue watch">
+            <h3>Watch for</h3>
+            <ul>
+              <li><code>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</code> is the current branch.</li>
+              <li><code>=======</code> separates versions.</li>
+              <li><code>&gt;&gt;&gt;&gt;&gt;&gt;&gt; feature/greeting</code> is the incoming branch.</li>
+              <li>Resolution is final file content plus <code>git add</code>.</li>
+            </ul>
+          </div>
+          <div class="code-card">
+            <div class="code-head"><span>Reset</span><button class="copy-btn" type="button">Copy</button></div>
+            <pre><code>git merge --abort 2&gt;/dev/null || true
+git switch main
+git branch -D demo/conflict-abort-main demo/conflict-main 2&gt;/dev/null || true
+git reset --hard workshop-main</code></pre>
+          </div>
+        </div>
+        <p class="callout">Transition: Conflict resolution is one repair. Now choose the right undo command.</p>
+      </section>
+
+      <section class="note-section" id="undo" data-title="Undo">
+        <div class="section-head">
+          <p class="eyebrow">Demo 6</p>
+          <h2>Undo depends on sharing risk.</h2>
+          <a class="section-link" href="git-knowledge-sharing-presentation.html#undo">Open presentation section</a>
+        </div>
+        <div class="grid">
+          <div class="cue goal">
+            <h3>Purpose</h3>
+            <p>Connect undo commands to whether the work is local or already shared.</p>
+          </div>
+          <div class="code-card">
+            <div class="code-head"><span>Setup</span><button class="copy-btn" type="button">Copy</button></div>
+            <pre><code>cd /Users/kadphol/Documents/git-sharing/taskly
+git switch main
+git reset --hard workshop-main
+git branch -D demo/undo-local important-work demo/recovered-work 2&gt;/dev/null || true
+git switch -c demo/undo-local</code></pre>
+          </div>
+          <details open>
+            <summary>Presenter commands</summary>
+            <div class="detail-body">
+              <div class="code-card">
+                <div class="code-head"><span>Amend</span><button class="copy-btn" type="button">Copy</button></div>
+                <pre><code>echo "forgotten note" &gt; note.txt
+git add note.txt
+git commit -m "docs: add note"
+
+echo "extra line" &gt;&gt; note.txt
+git add note.txt
+git commit --amend --no-edit
+git log --oneline -3</code></pre>
+              </div>
+              <div class="code-card">
+                <div class="code-head"><span>Restore and reset</span><button class="copy-btn" type="button">Copy</button></div>
+                <pre><code>echo "temporary work" &gt; scratch.txt
+git add scratch.txt
+git status --short
+
+git restore --staged scratch.txt
+git status --short
+
+git add scratch.txt
+git commit -m "demo: commit scratch"
+git reset --soft HEAD~1
+git status --short
+
+git restore --staged scratch.txt
+rm scratch.txt</code></pre>
+              </div>
+              <div class="code-card">
+                <div class="code-head"><span>Revert</span><button class="copy-btn" type="button">Copy</button></div>
+                <pre><code>echo "shared bad change" &gt; revert-target.txt
+git add revert-target.txt
+git commit -m "demo: shared bad change"
+
+git revert --no-edit HEAD
+git log --oneline -5</code></pre>
+              </div>
+              <div class="code-card">
+                <div class="code-head"><span>Reflog recovery</span><button class="copy-btn" type="button">Copy</button></div>
+                <pre><code>git switch main
+git switch -c important-work
+echo "important work" &gt; important.txt
+git add important.txt
+git commit -m "feat: important local work"
+
+git switch main
+git branch -D important-work
+git reflog -8
+git switch -c demo/recovered-work HEAD@{1}
+ls important.txt</code></pre>
+              </div>
+            </div>
+          </details>
+          <div class="cue watch">
+            <h3>Watch for</h3>
+            <ul>
+              <li><code>commit --amend</code> rewrites the last local commit.</li>
+              <li><code>restore --staged</code> moves a staged change back.</li>
+              <li><code>reset --soft</code> removes a commit but keeps staged changes.</li>
+              <li><code>revert</code> creates a new commit instead of deleting shared history.</li>
+              <li><code>reflog</code> recovers commits no branch points to anymore.</li>
+            </ul>
+          </div>
+          <div class="code-card">
+            <div class="code-head"><span>Reset</span><button class="copy-btn" type="button">Copy</button></div>
+            <pre><code>git switch main
+git branch -D demo/undo-local important-work demo/recovered-work 2&gt;/dev/null || true
+git reset --hard workshop-main</code></pre>
+          </div>
+        </div>
+        <p class="callout">Transition: The goal is not memorizing every command. It is knowing where Git keeps the manual.</p>
+      </section>
+
+      <section class="note-section" id="guide" data-title="Guide">
+        <div class="section-head">
+          <p class="eyebrow">Demo 7</p>
+          <h2>Find help from the terminal.</h2>
+          <a class="section-link" href="git-knowledge-sharing-presentation.html#guide">Open presentation section</a>
+        </div>
+        <div class="grid">
+          <div class="cue goal">
+            <h3>Purpose</h3>
+            <p>Show attendees how to discover Git commands and flags without searching the web first.</p>
+          </div>
+          <div class="code-card">
+            <div class="code-head"><span>Setup</span><button class="copy-btn" type="button">Copy</button></div>
+            <pre><code>cd /Users/kadphol/Documents/git-sharing/taskly
+git switch main</code></pre>
+          </div>
+          <div class="code-card">
+            <div class="code-head"><span>Presenter commands</span><button class="copy-btn" type="button">Copy</button></div>
+            <pre><code>git help -a
+git commit -h
+git help rebase
+man git</code></pre>
+          </div>
+          <div class="cue watch">
+            <h3>Watch for</h3>
+            <ul>
+              <li><code>git help -a</code> lists commands.</li>
+              <li><code>git commit -h</code> gives quick flag help.</li>
+              <li>In man pages: Space moves, <code>/word</code> searches, <code>n</code> jumps, <code>q</code> quits.</li>
+            </ul>
+          </div>
+        </div>
+        <p class="callout">Closing: Git is safer when we understand snapshots, refs, staging, branches, and sharing risk.</p>
+      </section>
+
+      <section class="note-section" id="reset" data-title="Reset">
+        <div class="section-head">
+          <p class="eyebrow">Emergency reset</p>
+          <h2>Recover a messy demo repo.</h2>
+        </div>
+        <div class="grid">
+          <div class="cue reset">
+            <h3>Use when</h3>
+            <p>A demo branch, merge, rebase, or local file state gets too messy to explain quickly.</p>
+          </div>
+          <div class="code-card">
+            <div class="code-head"><span>Reset demo repo</span><button class="copy-btn" type="button">Copy</button></div>
+            <pre><code>cd /Users/kadphol/Documents/git-sharing/taskly
+
+git merge --abort 2&gt;/dev/null || true
+git rebase --abort 2&gt;/dev/null || true
+git switch main
+git reset --hard workshop-main
+
+for branch in \
+  demo/basic-workflow \
+  demo/conflict-main \
+  demo/conflict-abort-main \
+  demo/hooks-example \
+  demo/recovered-work \
+  demo/three-states \
+  demo/undo-local \
+  important-work
+do
+  git branch -D "$branch" 2&gt;/dev/null || true
+done
+
+git branch -f feature/dark-mode workshop-feature-dark-mode
+git branch -f feature/greeting workshop-feature-greeting
+git branch -f feature/login workshop-feature-login
+
+git status --short
+git log --oneline --graph --decorate --all</code></pre>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      (() => {
+        const sections = Array.from(document.querySelectorAll(".note-section"));
+        const progress = document.querySelector(".progress");
+        const navLinks = Array.from(document.querySelectorAll(".section-nav a"));
+
+        const setActive = (section) => {
+          const index = sections.indexOf(section);
+          if (index < 0) return;
+
+          progress.textContent = `${index + 1} / ${sections.length}`;
+          navLinks.forEach((link) => {
+            link.classList.toggle("is-active", link.getAttribute("href") === `#${section.id}`);
+          });
+        };
+
+        const observer = new IntersectionObserver(
+          (entries) => {
+            const visible = entries
+              .filter((entry) => entry.isIntersecting)
+              .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+
+            if (visible) setActive(visible.target);
+          },
+          {
+            rootMargin: "-42% 0px -50% 0px",
+            threshold: [0.01, 0.2, 0.5],
+          },
+        );
+
+        sections.forEach((section) => observer.observe(section));
+        setActive(sections[0]);
+
+        const fallbackCopy = (text) => {
+          const area = document.createElement("textarea");
+          area.value = text;
+          area.setAttribute("readonly", "");
+          area.style.position = "fixed";
+          area.style.top = "-999px";
+          document.body.append(area);
+          area.select();
+          document.execCommand("copy");
+          area.remove();
+        };
+
+        document.querySelectorAll(".copy-btn").forEach((button) => {
+          button.addEventListener("click", async () => {
+            const code = button.closest(".code-card")?.querySelector("code");
+            const text = code?.textContent ?? "";
+            const original = button.textContent;
+
+            try {
+              if (navigator.clipboard?.writeText) {
+                await navigator.clipboard.writeText(text);
+              } else {
+                fallbackCopy(text);
+              }
+              button.textContent = "Copied";
+            } catch {
+              fallbackCopy(text);
+              button.textContent = "Copied";
+            }
+
+            window.setTimeout(() => {
+              button.textContent = original;
+            }, 1300);
+          });
+        });
+      })();
+    </script>
+  </body>
+</html>

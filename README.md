@@ -6,6 +6,23 @@ The main artifact is a one-page scrolling visual guide that covers Git internals
 
 A preserved slide-based HTML version from the `main` branch is also included for comparison or fallback.
 
+## GitHub Pages
+
+When deployed to GitHub Pages, open the repository site root:
+
+```text
+https://<user-or-org>.github.io/<repo>/
+```
+
+The landing page links to the audience presentation, mobile speaker notes, and
+the preserved slide version. For presenting, use this setup:
+
+- Laptop or projector: `git-knowledge-sharing-presentation.html`
+- Phone: `speaker-notes.html`
+- Terminal: local `taskly/` demo repository
+
+All links are relative so the pages work under a GitHub Pages project path.
+
 ## Main Guide
 
 Open the current scrolling guide directly in a browser:
@@ -24,6 +41,12 @@ Then open:
 
 ```text
 http://localhost:8765/git-knowledge-sharing-presentation.html
+```
+
+The GitHub Pages entrypoint is also available locally:
+
+```text
+http://localhost:8765/index.html
 ```
 
 Presenter controls:
@@ -58,9 +81,17 @@ WORKSHOP_RUNBOOK.md
 The runbook matches the presentation sections and provides copy-paste commands,
 facilitator notes, expected observations, reset steps, and discussion prompts.
 
+For live presenting on mobile, use the condensed phone-first speaker notes:
+
+```text
+speaker-notes.html
+```
+
 ## Repository Contents
 
 - `git-knowledge-sharing-presentation.html` - scrolling visual guide for the session.
+- `speaker-notes.html` - mobile-friendly condensed presenter notes.
+- `index.html` - GitHub Pages landing page.
 - `git-knowledge-sharing-presentation-slides.html` - preserved slide-based HTML version from `main`.
 - `git-knowledge-sharing-script.md` - speaker script and source material.
 - `git-workshop-guide.md` - facilitator guide for a longer workshop format.
