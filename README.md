@@ -26,6 +26,13 @@ Then open:
 http://localhost:8765/git-knowledge-sharing-presentation.html
 ```
 
+Presenter controls:
+
+- Click `Full screen` or press `F` to enter or exit fullscreen mode.
+- Use `ArrowDown`, `PageDown`, or `Space` to move to the next section.
+- Use `ArrowUp` or `PageUp` to move to the previous section.
+- Use `Home` and `End` to jump to the first or last section.
+
 ## Previous Slide Version
 
 The previous slide-based version from `main` is available as:

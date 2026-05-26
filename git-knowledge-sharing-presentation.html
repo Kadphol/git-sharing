@@ -4,6 +4,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Git Knowledge Sharing - Scrolling Visual Guide</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23f05033'/%3E%3Cpath d='M21 32h22M32 21v22' stroke='%23fff7ed' stroke-width='6' stroke-linecap='round'/%3E%3C/svg%3E"
+    />
     <style>
       :root {
         color-scheme: dark;
@@ -131,22 +135,44 @@
         flex-wrap: wrap;
       }
 
-      .nav-links a {
+      .nav-links a,
+      .fullscreen-toggle {
         display: inline-flex;
         align-items: center;
         min-height: 32px;
         padding: 0 10px;
         border: 1px solid transparent;
         border-radius: 999px;
+        background: transparent;
         color: var(--muted);
+        font: inherit;
         font-size: 12px;
         font-weight: 800;
+        cursor: pointer;
       }
 
-      .nav-links a:hover {
+      .nav-links a:hover,
+      .fullscreen-toggle:hover {
         color: var(--ink);
         border-color: rgba(240, 80, 51, 0.5);
         background: rgba(240, 80, 51, 0.12);
+      }
+
+      .nav-links a.is-active,
+      .fullscreen-toggle.is-active {
+        color: var(--ink);
+        border-color: rgba(240, 80, 51, 0.72);
+        background: rgba(240, 80, 51, 0.18);
+      }
+
+      .fullscreen-toggle {
+        white-space: nowrap;
+      }
+
+      .fullscreen-toggle:focus-visible,
+      .nav-links a:focus-visible {
+        outline: 2px solid var(--git);
+        outline-offset: 3px;
       }
 
       .page {
@@ -652,7 +678,82 @@
         font-size: 14px;
       }
 
+      @media (min-width: 1051px) {
+        html {
+          scroll-snap-type: y mandatory;
+        }
+
+        html.is-programmatic-scroll {
+          scroll-behavior: auto;
+          scroll-snap-type: none;
+        }
+
+        .section {
+          min-height: calc(100svh - 72px);
+          scroll-snap-align: start;
+          scroll-snap-stop: always;
+        }
+
+        .footer {
+          scroll-snap-align: end;
+        }
+
+        body.is-fullscreen .site-nav {
+          padding: 8px 0;
+        }
+
+        body.is-fullscreen .nav-shell {
+          padding: 8px 10px;
+          background: rgba(12, 11, 10, 0.9);
+        }
+
+        body.is-fullscreen .page {
+          padding-bottom: 36px;
+        }
+
+        body.is-fullscreen .section {
+          min-height: calc(100svh - 58px);
+          padding: clamp(24px, 3.4vw, 46px) 0;
+        }
+
+        body.is-fullscreen .section.tight {
+          min-height: calc(100svh - 58px);
+        }
+
+        body.is-fullscreen h1 {
+          font-size: clamp(42px, 5vw, 70px);
+        }
+
+        body.is-fullscreen h2 {
+          font-size: clamp(30px, 3vw, 44px);
+        }
+
+        body.is-fullscreen .lede {
+          font-size: clamp(16px, 1.18vw, 18px);
+        }
+
+        body.is-fullscreen .card {
+          padding: 18px;
+        }
+
+        body.is-fullscreen .visual-frame {
+          min-height: min(58svh, 520px);
+        }
+
+        body.is-fullscreen .visual-frame img {
+          max-height: min(58svh, 560px);
+        }
+
+        body.is-fullscreen .hook {
+          min-height: 166px;
+        }
+      }
+
       @media (max-width: 1050px) {
+        html {
+          scroll-snap-type: none;
+        }
+
         .nav-shell,
         .site-nav {
           align-items: flex-start;
@@ -664,6 +765,10 @@
 
         .nav-links {
           justify-content: flex-start;
+        }
+
+        .fullscreen-toggle {
+          min-height: 34px;
         }
 
         .two,
@@ -707,6 +812,10 @@
         body::before,
         .site-nav {
           display: none;
+        }
+
+        html {
+          scroll-snap-type: none;
         }
 
         .page {
@@ -769,6 +878,14 @@
           <a href="#conflicts">Conflicts</a>
           <a href="#undo">Undo</a>
           <a href="#guide">Guide</a>
+          <button
+            class="fullscreen-toggle"
+            type="button"
+            aria-pressed="false"
+            aria-label="Enter full screen presentation mode"
+          >
+            Full screen
+          </button>
         </div>
       </div>
     </nav>
@@ -1377,5 +1494,167 @@
         branches are treated carefully.
       </footer>
     </main>
+    <script>
+      (() => {
+        const sections = Array.from(document.querySelectorAll(".section"));
+        const navLinks = Array.from(document.querySelectorAll(".nav-links a"));
+        const fullscreenToggle = document.querySelector(".fullscreen-toggle");
+        let currentIndex = 0;
+
+        const interactiveSelector = [
+          "a",
+          "button",
+          "input",
+          "select",
+          "textarea",
+          "[contenteditable='true']",
+        ].join(",");
+
+        const getCurrentIndex = () => {
+          const navHeight = document.querySelector(".site-nav")?.offsetHeight ?? 0;
+          const referenceY = window.scrollY + navHeight + 28;
+          let activeIndex = 0;
+
+          sections.forEach((section, index) => {
+            if (section.offsetTop <= referenceY) {
+              activeIndex = index;
+            }
+          });
+
+          return activeIndex;
+        };
+
+        const updateActiveNav = () => {
+          currentIndex = getCurrentIndex();
+          const activeId = sections[currentIndex]?.id;
+
+          navLinks.forEach((link) => {
+            const targetId = link.getAttribute("href")?.slice(1);
+            link.classList.toggle("is-active", Boolean(activeId && targetId === activeId));
+          });
+        };
+
+        const goToSection = (index) => {
+          const nextIndex = Math.max(0, Math.min(sections.length - 1, index));
+          const section = sections[nextIndex];
+
+          if (!section) return;
+
+          currentIndex = nextIndex;
+          document.documentElement.classList.add("is-programmatic-scroll");
+          const distance = Math.abs(section.offsetTop - window.scrollY);
+          const isLongJump = distance > window.innerHeight * 1.5;
+          window.scrollTo({
+            top: section.offsetTop,
+            behavior: isLongJump ? "auto" : "smooth",
+          });
+          window.setTimeout(() => {
+            document.documentElement.classList.remove("is-programmatic-scroll");
+            updateActiveNav();
+          }, isLongJump ? 500 : 650);
+        };
+
+        const updateFullscreenState = () => {
+          const isFullscreen = Boolean(document.fullscreenElement);
+          document.body.classList.toggle("is-fullscreen", isFullscreen);
+
+          if (!fullscreenToggle) return;
+
+          fullscreenToggle.classList.toggle("is-active", isFullscreen);
+          fullscreenToggle.setAttribute("aria-pressed", String(isFullscreen));
+          fullscreenToggle.setAttribute(
+            "aria-label",
+            isFullscreen
+              ? "Exit full screen presentation mode"
+              : "Enter full screen presentation mode",
+          );
+          fullscreenToggle.textContent = isFullscreen ? "Exit full screen" : "Full screen";
+        };
+
+        const toggleFullscreen = async () => {
+          try {
+            if (document.fullscreenElement) {
+              await document.exitFullscreen();
+            } else {
+              await document.documentElement.requestFullscreen();
+            }
+          } catch (error) {
+            console.warn("Fullscreen mode is not available in this browser.", error);
+          }
+        };
+
+        fullscreenToggle?.addEventListener("click", toggleFullscreen);
+        document.addEventListener("fullscreenchange", updateFullscreenState);
+
+        document.addEventListener("keydown", (event) => {
+          if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.altKey) {
+            return;
+          }
+
+          if (event.target instanceof Element && event.target.closest(interactiveSelector)) {
+            return;
+          }
+
+          const key = event.key.toLowerCase();
+
+          if (key === "f") {
+            event.preventDefault();
+            toggleFullscreen();
+            return;
+          }
+
+          if (["arrowdown", "pagedown", " "].includes(key)) {
+            event.preventDefault();
+            goToSection(getCurrentIndex() + 1);
+            return;
+          }
+
+          if (["arrowup", "pageup"].includes(key)) {
+            event.preventDefault();
+            goToSection(getCurrentIndex() - 1);
+            return;
+          }
+
+          if (key === "home") {
+            event.preventDefault();
+            goToSection(0);
+            return;
+          }
+
+          if (key === "end") {
+            event.preventDefault();
+            goToSection(sections.length - 1);
+          }
+        });
+
+        let scrollFrame = 0;
+        document.addEventListener(
+          "scroll",
+          () => {
+            window.cancelAnimationFrame(scrollFrame);
+            scrollFrame = window.requestAnimationFrame(updateActiveNav);
+          },
+          { passive: true },
+        );
+
+        navLinks.forEach((link) => {
+          link.addEventListener("click", (event) => {
+            const targetId = link.getAttribute("href")?.slice(1);
+            const targetIndex = sections.findIndex((section) => section.id === targetId);
+
+            if (targetIndex >= 0) {
+              event.preventDefault();
+              goToSection(targetIndex);
+              history.pushState(null, "", `#${targetId}`);
+            }
+
+            window.setTimeout(updateActiveNav, 420);
+          });
+        });
+
+        updateFullscreenState();
+        updateActiveNav();
+      })();
+    </script>
   </body>
 </html>
